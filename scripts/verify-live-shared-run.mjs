@@ -41,11 +41,11 @@ try {
   await pages[0].getByRole('button', { name: `Buy one ${good}` }).click();
   await pages[0].getByText('Held: 2').waitFor();
 
-  await pages[0].getByRole('heading', { level: 1, name: 'You met your goal' }).waitFor({ timeout: roundTimeout });
-  await Promise.all(pages.slice(1).map(page => page.locator('.end-screen h1').waitFor({ timeout: 15_000 })));
+  await pages[0].getByRole('heading', { level: 2, name: 'You met your goal' }).waitFor({ timeout: roundTimeout });
+  await Promise.all(pages.slice(1).map(page => page.locator('.end-card h2').waitFor({ timeout: 15_000 })));
   const reports = await Promise.all(pages.map(async page => ({
-    heading: await page.locator('.end-screen h1').textContent(),
-    report: await page.locator('.end-screen').innerText()
+    heading: await page.locator('.end-card h2').textContent(),
+    report: await page.locator('.end-card').innerText()
   })));
   if (!reports.every(({ report }) => /finished with \d+ tickets/i.test(report))) {
     throw new Error('Each browser did not receive a final ticket report.');
