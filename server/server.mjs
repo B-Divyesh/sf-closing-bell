@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { WebSocketServer } from 'ws';
 import { advance, cleanName, join, newRoom, snapshot, start, trade } from './game.mjs';
 
+// A single durable SQLite writer owns each room service revision.
 const port = Number(process.env.PORT || 8080);
 const dataDir = process.env.DATA_DIR || '/data';
 try { mkdirSync(dataDir, { recursive: true }); } catch { /* local fallback below */ }
