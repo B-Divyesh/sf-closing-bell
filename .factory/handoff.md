@@ -54,6 +54,10 @@ Verified 2026-09-02:
 
 ## Deployment
 
+Published static client commit 19802a8 to sf-closing-bell and realtime service
+commit e725be5 to sf-closing-bell-realtime on 2026-09-02. Both production URLs
+returned HTTP 200 after publish.
+
 The static client must be deployed to sf-closing-bell. The websocket service
 must be deployed with:
 
