@@ -41,8 +41,8 @@ price in another browser.
 - `ws` is upgraded to 8.21.3 and Vite to 6.4.3. Both production and full npm
   audits report zero vulnerabilities.
 - The container carries the source commit through `BUILD_SHA`; `/health`
-  returns it with `Cache-Control: no-store`. The static footer shows the same
-  build source when built from that commit.
+  and the service root return it with `Cache-Control: no-store`. The static
+  footer shows the same build source when built from that commit.
 - The bell now sounds after a player gesture. Mute persists in the correct
   real or demo namespace. Reduced motion disables movement.
 

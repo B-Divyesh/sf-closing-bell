@@ -32,7 +32,7 @@ function error(ws, message) { send(ws, { type: 'error', message }); }
 function broadcast(room) { save(room); for (const [ws, client] of clients) if (client.code === room.code) send(ws, snapshot(room, client.token)); }
 
 const server = createServer((req, res) => {
-  if (req.url === '/health') { res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify({ ok: true, build: process.env.BUILD_SHA || 'dev' })); return; }
+  if (req.url === '/' || req.url === '/health') { res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify({ ok: true, service: 'closing-bell-realtime', build: process.env.BUILD_SHA || 'dev' })); return; }
   res.writeHead(404, { 'content-type': 'application/json' }); res.end('{"error":"not found"}');
 });
 const wss = new WebSocketServer({ noServer: true, maxPayload: 4096 });

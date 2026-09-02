@@ -45,7 +45,8 @@ after(async () => {
 test('health exposes the running build SHA', async () => {
   const response = await fetch(`http://127.0.0.1:${port}/health`);
   assert.equal(response.status,200);
-  assert.deepEqual(await response.json(),{ok:true,build:'test-build-c646a26'});
+  assert.deepEqual(await response.json(),{ok:true,service:'closing-bell-realtime',build:'test-build-c646a26'});
+  assert.equal((await fetch(`http://127.0.0.1:${port}/`)).status,200);
 });
 
 test('the WebSocket origin policy rejects an untrusted site with 403', async () => {
