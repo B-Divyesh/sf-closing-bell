@@ -42,10 +42,10 @@ function gameData(demo: boolean): Game {
 function route() {
   const raw = location.pathname === '/404' ? '/404' : location.pathname;
   const path = ['/','/demo','/privacy','/terms'].includes(raw) ? raw : '/404';
-  document.title = title(path);
+  const demo = path === '/demo' || isDemo();
+  document.title = title(demo ? '/demo' : path);
   activeRoute = path;
   if (path === '/privacy' || path === '/terms' || path === '/404') { game = null; renderPage(path); return; }
-  const demo = path === '/demo' || isDemo();
   if (!game || game.demo !== demo) game = gameData(demo);
   renderGame();
 }
