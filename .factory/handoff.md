@@ -5,7 +5,7 @@
 Repaired verifier candidate 68d8e290379c1da90288512e4bdb45acd3c7b88b.
 
 - Added product-owned sf-closing-bell-realtime WebSocket service source and
-  Dockerfile. It uses SQLite at /data/closing-bell.db, accepts only Closing
+  Dockerfile. It uses SQLite at /data/closing-bell-rooms-v3.db, accepts only Closing
   Bell and local development origins, applies a 20-message/second IP limit,
   and exposes GET /health.
 - Added authoritative five-character rooms for 3–8 players. The server creates
@@ -42,9 +42,15 @@ Verified 2026-09-02:
   CSS is 2.64 KB gzip.
 - Local health smoke: node server/server.mjs then GET
   http://127.0.0.1:8080/health returned 200 with ok true.
-- A direct three-client WebSocket smoke opened room RNAMA, started it, and
-  verified the authoritative buy. Room codes are random, so this value is
-  evidence only.
+- Live service health at https://closing-bell-realtime.sociobot.in/health
+  returned 200 with ok true. A live three-client WebSocket smoke opened room
+  FMFDY, started it, made an authoritative buy, and recovered that seat over
+  a new connection.
+- Live static verification: verify-url.sh reported title, lang, one h1, main,
+  alt text, and no console errors at 1366 px. Playwright at 390 px reported
+  390 px scroll width, no console errors, and no serious or critical axe
+  findings. The deployed CSP permits only the owned realtime WebSocket in
+  connect-src.
 
 ## Deployment
 
@@ -61,7 +67,7 @@ secrets or other product resources are used.
 
 ## Known gaps
 
-Deployment and final live Lighthouse/axe/response-policy checks have not yet
-been recorded in this handoff. The client and server are committed ready for
-those commands; deploy the realtime service before the static client so the
-room entry point is immediately usable.
+Static Web Apps still serves hashed assets with max-age=30 despite the deployed
+immutable asset route configuration. This platform cache-policy limitation was
+observed in the live response headers; the client remains 5.60 KB gzip
+JavaScript.
