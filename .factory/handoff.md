@@ -98,18 +98,39 @@ Results on 2026-09-02:
 
 ## Deployment
 
-The static client is deployed to `sf-closing-bell`. The realtime service is
-deployed to the product-owned `sf-closing-bell-realtime` container with its
-existing `/data` mount and single replica:
+Application commit `165a64c2158821296bd796efc53eec52ce0f4cd9` is deployed to
+`sf-closing-bell`. The same commit is deployed to the product-owned
+`sf-closing-bell-realtime` container with its existing `/data` mount and single
+replica:
 
 ~~~sh
 WO_DATA_DIR=/data /opt/fleet/lib/deploy-container.sh closing-bell-realtime /work/repo Dockerfile 8080
 /opt/fleet/lib/deploy-static.sh closing-bell /work/repo/dist
 ~~~
 
-The deployed `/health` build value is checked against the release commit. Live
-desktop, 390 px, keyboard, console, status, headers, identity, and a three-seat
-trade are checked after publish.
+Post-deploy checks passed on 2026-09-02:
+
+- `GET https://closing-bell-realtime.sociobot.in/health` returned 200,
+  `Cache-Control: no-store`, and build
+  `165a64c2158821296bd796efc53eec52ce0f4cd9`.
+- `/`, `/demo`, `/privacy`, and `/terms` returned 200. `/404` returned the
+  designed preview with no console errors. `/missing-final-check` returned the
+  same designed page with HTTP 404.
+- Hashed assets returned one-year immutable caching plus the intended CSP,
+  referrer, content-type, and permissions headers.
+- `verify-url.sh` on the live demo reported a 570 ms load, one h1, one main,
+  no missing labels or alt text, and no console errors.
+- Live axe checks found no serious or critical issue on `/`, `/demo`,
+  `/privacy`, `/terms`, or `/404` at 390×844.
+- Live Lighthouse on `/demo`: Performance 100, Accessibility 100, Best
+  Practices 100, SEO 100; LCP 835 ms, CLS 0, total blocking time 0 ms, and
+  11,630 transferred bytes.
+- A live 390 px scripted demo reached **You met your goal** and restarted at
+  180 tickets. Root and demo scroll width both measured 390 px.
+- Live room `3LR6P` accepted three independent browser seats and the shipped
+  Buy control changed the host to `Held: 1` without console errors.
+- A live untrusted-origin upgrade returned 403. A live message burst returned
+  JSON status 429 with `retryAfter: 1`.
 
 ## Known limits
 
