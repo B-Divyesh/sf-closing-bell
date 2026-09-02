@@ -11,7 +11,8 @@ try { mkdirSync(dataDir, { recursive: true }); } catch { /* local fallback below
 let db;
 try { db = new DatabaseSync(`${dataDir}/closing-bell.db`); } catch { db = new DatabaseSync('./closing-bell.db'); }
 db.exec('PRAGMA busy_timeout = 5000');
-db.exec('CREATE TABLE IF NOT EXISTS rooms (code TEXT PRIMARY KEY, state TEXT NOT NULL, updated_at INTEGER NOT NULL)');
+const hasRooms = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='rooms'").get();
+if (!hasRooms) db.exec('CREATE TABLE rooms (code TEXT PRIMARY KEY, state TEXT NOT NULL, updated_at INTEGER NOT NULL)');
 const clients = new Map();
 const allowedOrigins = new Set(['https://closing-bell.sociobot.in', 'http://127.0.0.1:4173', 'http://localhost:4173']);
 const buckets = new Map();
