@@ -88,9 +88,9 @@ Results on 2026-09-02:
   total blocking time 0 ms.
 - `verify-url.sh` on the production preview: title, `lang`, h1, main, alt,
   labels, and console checks passed; load 532 ms and no console errors.
-- Azure Static Web Apps emulator: `/`, `/demo`, `/privacy`, and `/terms`
-  returned 200; `/404` and an arbitrary missing path returned the designed
-  page with 404; hashed assets returned
+- Azure Static Web Apps emulator: `/`, `/demo`, `/privacy`, `/terms`, and the
+  explicit `/404` preview returned 200; an arbitrary missing path returned the
+  designed page with 404; hashed assets returned
   `Cache-Control: public, max-age=31536000, immutable`.
 - Response-policy tests: invalid WebSocket origin returned 403; a message
   burst returned status 429, retry-after 1, and close code 1013; health
