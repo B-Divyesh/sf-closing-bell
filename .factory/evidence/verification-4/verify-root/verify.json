@@ -1,0 +1,14 @@
+{
+  "url": "https://closing-bell.sociobot.in/",
+  "loadMs": 629,
+  "errors": [],
+  "a11y": {
+    "title": "Closing Bell — Play a room-code market game",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 1183
+  }
+}
