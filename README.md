@@ -38,9 +38,16 @@ npm run build
 npm audit
 ~~~
 
+After each realtime deployment, prove that the live service is the exact
+source revision that was released:
+
+~~~sh
+EXPECTED_BUILD_SHA=<git-sha> npm run verify:realtime-release
+~~~
+
 The suite covers the browser-to-server trade protocol, shared price impact,
 reconnect, demo isolation, keyboard play, 390 px layout, route focus,
-accessibility, response policy, rate limiting, build identity, and the full
+accessibility, response policy, rate limiting, release identity, and the full
 title-to-end-screen loop. The fixed-step renderer targets 60 frames per second
 and is measured under 4× CPU throttling.
 

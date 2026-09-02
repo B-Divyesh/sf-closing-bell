@@ -11,6 +11,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "npm run test:server && playwright test",
     "test:server": "node --test server/*.test.mjs",
+    "verify:realtime-release": "node scripts/verify-realtime-release.mjs",
     "realtime": "node server/server.mjs"
   },
   "devDependencies": {
