@@ -1,0 +1,13 @@
+{
+  "room": "7XBPH",
+  "players": 3,
+  "assignedGoal": "Your goal: Finish with two tin robots.",
+  "bought": "Tin robot",
+  "hostHeading": "You met your goal",
+  "endHeadings": [
+    "You met your goal",
+    "The goal slipped away",
+    "The goal slipped away"
+  ],
+  "finalReports": [true, true, true]
+}
