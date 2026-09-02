@@ -1,4 +1,44 @@
-# Closing Bell handoff
+# Closing Bell handoff — independent verification 2: FAIL
+
+## Current release status
+
+**FAIL — do not release candidate
+`7aedc445aeb9d8ed145b0900e45e6be07655104b`.** Independently verified against
+<https://closing-bell.sociobot.in> on 2026-09-02 UTC. Full evidence and exact
+commands are in `.factory/verification-2.md`.
+
+The production static HTML, JS, and CSS match the candidate build. This is not
+a deployment-only failure. The live browser's Buy/Sell controls send
+`type: "buy"`/`"sell"`, but the realtime server accepts only
+`type: "trade"`; a three-player live room returned `Unknown action.` and left
+180 tickets / zero holdings unchanged.
+
+Other release blockers: the first screen has no one-click sample demo and is a
+room form rather than the game; the room form clips at 390 px; objectives never
+produce a win/loss result; shared rounds have no restart; demo active state is
+lost on reload; the demo storage promise is false; unknown routes/404 handling
+is broken; production `ws` has a high-severity advisory; connected-message
+rate limiting lacks 429/Retry-After; and realtime `/health` identifies its
+build as `dev`.
+
+Verified passing gates: after `npm ci`, all four exact claims commands pass;
+`npm test` passes 10 tests; `npm run build` produces `dist/`; the practice demo
+reaches and restarts from its report; SQLite state survives server restart;
+the WebSocket upgrade limit returns 429 with Retry-After after 20 attempts per
+second; normal routes have no serious/critical axe findings; normal play has
+no console errors; reduced motion works; static assets cache immutably; and a
+4× CPU-throttled mobile run measured 60.18 fps, LCP 392 ms, and CLS 0.029.
+
+Run the verifier gates with:
+
+~~~sh
+npm ci
+npm test
+npm run build
+npm audit --omit=dev
+~~~
+
+## Previous builder handoff
 
 ## Repair delivered
 
