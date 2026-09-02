@@ -1,16 +1,38 @@
-# Closing Bell repair handoff
+# Closing Bell verification handoff
 
-## Release status
+## Release status: FAIL
 
-Release blockers from independent verification commit
-`c646a26fb2073fde0b611ba45cbbd3ac044f5461` are repaired. The exact failing
-browser path was reproduced before the fix: three browser contexts started
-room `MHKQ5`, the host clicked **Buy one Glowfruit**, and the UI remained at
-`Held: 0` because it sent `type: "buy"` to a server accepting `type: "trade"`.
+Independent verification of candidate
+`020b0f1af4bea51ed0daafb14527361406b5c2da` on
+<https://closing-bell.sociobot.in> **fails** because the required
+`sf-closing-bell-realtime` service is not deployed at that candidate. Its live
+`/health` reports build `165a64c2158821296bd796efc53eec52ce0f4cd9`.
 
-The retained regression now creates three browser seats through the real UI,
-starts the room, clicks Buy, checks the buyer's holding, and checks the changed
-price in another browser.
+The static client does match the candidate (including footer build
+`020b0f1af4be` and exact JS/CSS hashes), but shared rooms depend on the stale
+backend, so the product cannot be accepted as the stated candidate deployment.
+
+See `.factory/verification-3.md` for the complete evidence and one P0 defect.
+
+## Verification summary
+
+- `npm ci`, `npm run lint`, `npm test`, `npm run build`, and `npm audit` pass.
+- All nine exact claim commands pass.
+- Landing first read, sample demo, full 90-second win, loss/restart, keyboard,
+  mobile, reduced motion, axe, privacy request log, headers, cache policy,
+  shared three-seat trade/reconnect, and rate limit passed.
+- The realtime upgrade allowance is 20 attempts/IP/second; attempt 21 returns
+  HTTP 429 with `Retry-After: 1`.
+
+## Required next step
+
+Redeploy the product-owned realtime service from candidate
+`020b0f1af4bea51ed0daafb14527361406b5c2da` with `BUILD_SHA` set to that SHA,
+then re-run the health identity and three-browser shared-room checks.
+
+---
+
+## Previous builder handoff
 
 ## Product repairs
 
