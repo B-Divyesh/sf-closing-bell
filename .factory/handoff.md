@@ -28,7 +28,7 @@ Verified on 2026-09-02:
 - `npm test`: 5 passing Playwright tests, including the three claim tests,
   keyboard operation, and axe serious/critical accessibility check.
 - `npm run build`: passes; `dist/index.html` is at the deploy root.
-- Production bundle: JS 5.12 KB gzip; CSS 2.47 KB gzip. The responsive LCP art
+- Production bundle: JS 5.17 KB gzip; CSS 2.48 KB gzip. The responsive LCP art
   is 74 KB on mobile and 191 KB on desktop.
 - Local Lighthouse run on `/demo`: accessibility 100, CLS 0.01. Its Chrome tab
   crashed during full-page screenshot capture after audits; the incomplete
