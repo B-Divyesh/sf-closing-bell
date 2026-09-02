@@ -1,13 +1,17 @@
 # Demo sandbox
 
-Open /demo or /?demo=1 for the practice market. It starts with 180 tickets,
-three fictional goods, a fixed headline deck, and a 90-second round. It never
-opens a WebSocket connection or reads a shared room.
+Open `/demo` or `/?demo=1`. The active practice board appears immediately.
+It starts with 180 tickets, three fictional goods, a fixed headline deck, and
+a 90-second timer. The objective is to hold two tin robots at the bell.
 
-The demo uses the demo:closing-bell:* localStorage namespace. Resetting the
-demo removes its best score and starts fresh. Demo mode never reads or writes
-the real room-seat namespace.
+The demo never opens the shared-room WebSocket. It stores its active run and
+sound choice only in `sessionStorage` under `demo:closing-bell:run`. It does
+not read or write the real room-seat or sound keys in `localStorage`.
 
-For automated checks only, /demo?duration=2 makes the same deterministic
-practice round last two seconds. The real entry point / is the 3–8 player
-room-code game; each shared seat is recovered through an anonymous local token.
+Reload restores the active demo in the same tab. **Reset demo** replaces it
+with a clean run. **Start for real** removes every `demo:closing-bell:*` key
+before opening the shared-room screen.
+
+For automated checks only, `/demo?duration=2` uses the same deterministic loop
+with a two-second timer. The scripted claim test buys two tin robots, reaches
+the win screen, and restarts.

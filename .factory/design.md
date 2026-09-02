@@ -15,6 +15,7 @@ It makes the closing countdown and the next trade obvious on a small phone.
 | paper | `#f7f2e7` | page background |
 | panel | `#fffdf7` | cards and controls |
 | signal | `#e83d35` | bell, sell, urgency |
+| signal text | `#a92a25` | accessible red text on paper |
 | electric | `#1464d2` | buy, links, focus |
 | lime | `#c9ed58` | gains and active states |
 | plum | `#6a3c84` | third commodity |
@@ -41,16 +42,24 @@ are disabled. No flashing effect is used.
 
 ## Game arc
 
-The standard round is six minutes. A public headline arrives every 45 seconds;
-early news makes small moves, while the final 90 seconds makes larger moves.
-The app’s demo uses a 90-second rehearsal so one-click testing can reach the
-bell; it is clearly labelled and has the same deterministic deck rules.
+The standard shared round is six minutes. A public headline arrives every 45
+seconds; late news makes larger moves. Buying raises that good's shared price
+by two tickets, while selling lowers it by two. Each room derives a different
+deterministic sequence from its room code and creation time. A player wins by
+holding two units of their assigned good at the bell. The host can immediately
+restart the group with clean balances and a new sequence.
+
+The one-click demo starts an active 90-second rehearsal. It uses a fixed
+headline deck and a two-tin-robot objective, so the complete decision, result,
+and restart loop is easy to understand and automate. A 60 Hz fixed-step loop
+keeps its timing stable; rendering pauses when the tab is hidden.
 
 ## Art direction and provenance
 
-The hero illustration shows three fictional commodity crates on a condensed,
-paper-textured trading floor with a closing bell, screen-printed in ink, red,
-electric blue, lime, and plum. It contains no words, logos, brands, people, or
-financial symbols. It is generated with the factory image tool on 2026-09-02,
-then converted to WebP for the site. Generated imagery is disclosed in the
-footer. Prompt sidecar: `public/assets/market-floor.prompt.json`.
+The first screen uses a hand-built HTML market board so the game is legible in
+the product capture. The generated illustration shows three fictional crates
+and a closing bell in the same ink, red, blue, lime, and plum palette. It is
+used for the social preview and contains no words, brands, people, or financial
+symbols. It was generated with the factory image tool on 2026-09-02. Generated
+imagery is disclosed in the footer. Prompt and model metadata are recorded in
+`public/assets/market-floor.png.json`.

@@ -1,48 +1,66 @@
 # Closing Bell
 
-Trade fictional goods with 3–8 friends in one six-minute room-code market game.
-Create a room, share its five-letter code, and trade before the closing bell.
+Trade fictional goods with 3–8 friends in one six-minute room-code game.
+News and player trades move shared prices until the closing bell.
 
-There are no accounts, real money, prizes, betting, or financial advice. A
-90-second practice market is available at /demo.
+Each player gets a private holding goal. The end screen reports a win or loss,
+final tickets, and a one-tap restart for the host.
+
+The one-click demo at `/demo` starts a 90-second practice round. It uses an
+isolated temporary state, survives reload in the same tab, and clears on exit.
+The sound setting also survives a demo reload without entering real storage.
+
+Closing Bell is free. It has no accounts, real money, prizes, betting,
+analytics, ads, or financial advice.
 
 ## Run
 
+Use Node 22 or newer.
+
 ~~~sh
-npm install
-npm run dev
+npm ci
+npm run dev -- --port 4173
 npm run realtime
 ~~~
 
-Open http://127.0.0.1:5173 for shared rooms or /demo for the isolated sample.
-The WebSocket server listens on port 8080 and uses SQLite under /data when
-deployed. Locally it falls back to ./closing-bell.db.
+Open `http://127.0.0.1:4173/` for shared rooms. Open
+`http://127.0.0.1:4173/demo` for the isolated sample.
+
+The realtime service listens on port 8080. It stores room state in SQLite
+under `DATA_DIR`, which defaults to `/data` in production.
 
 ## Verify
 
 ~~~sh
+npm run lint
 npm test
 npm run build
+npm audit
 ~~~
 
-npm test covers server-side trade checks, three-player start, reconnect and
-reload recovery, a deterministic game ending, the CSP-safe countdown, demo
-claims, keyboard operation, and accessibility. dist/ is the static client
-build. Run individual claims with commands in .factory/claims.json.
+The suite covers the browser-to-server trade protocol, shared price impact,
+reconnect, demo isolation, keyboard play, 390 px layout, route focus,
+accessibility, response policy, rate limiting, build identity, and the full
+title-to-end-screen loop. The fixed-step renderer targets 60 frames per second
+and is measured under 4× CPU throttling.
+
+Every public claim and its exact command is listed in
+`.factory/claims.json`.
 
 ## Deployment
 
-Deploy dist/ as the static client and deploy the included Dockerfile as the
-product-owned sf-closing-bell-realtime WebSocket service with /data mounted.
-The production client connects only to wss://closing-bell-realtime.sociobot.in;
-CSP explicitly permits that origin.
+Build and deploy `dist/` to the `sf-closing-bell` static app. Deploy the
+included Dockerfile to the product-owned `sf-closing-bell-realtime` service
+with `/data` mounted. The production client connects only to
+`wss://closing-bell-realtime.sociobot.in`.
 
-## Privacy
+## Privacy and limits
 
-The practice demo uses only demo:closing-bell:* browser keys and never calls
-the room service. Shared rooms retain only room state and anonymous seat tokens
-so a player can reconnect after refresh. Closing Bell has no analytics, ads,
-or account system.
+Practice play uses only the `demo:closing-bell:*` session namespace. Shared
+rooms store an anonymous seat token in the browser and room state on the
+product server. Shared play needs a network connection.
+
+See `/privacy` and `/terms` for the user-facing policies.
 
 ## License
 

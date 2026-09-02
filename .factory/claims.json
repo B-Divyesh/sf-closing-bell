@@ -1,31 +1,65 @@
 [
   {
     "id": "reaches-bell",
-    "claim": "A practice round reaches a closing report.",
-    "where": "game end screen, README",
+    "claim": "A scripted practice run reaches a clear win or loss end screen.",
+    "where": "practice game and README",
     "test": "npm test -- --grep @claim:reaches-bell",
-    "sandbox": "fresh browser context at /demo?duration=2; start the demo and observe its closing report"
+    "sandbox": "fresh browser context at /demo?duration=2; buy two tin robots and assert the winning closing report"
   },
   {
     "id": "restart-resets",
-    "claim": "Play another round starts with 180 tickets and no holdings.",
-    "where": "closing report button, README",
+    "claim": "Play another round restarts immediately with 180 tickets and no holdings.",
+    "where": "closing report and README",
     "test": "npm test -- --grep @claim:restart-resets",
-    "sandbox": "fresh browser context at /demo?duration=2; reach the report, restart, and inspect the board"
+    "sandbox": "fresh browser context at /demo?duration=1; reach the report, restart, and inspect the live board"
   },
   {
-    "id": "local-only",
-    "claim": "Demo play makes no third-party requests.",
-    "where": "privacy page, README",
-    "test": "npm test -- --grep @claim:local-only",
-    "sandbox": "fresh browser context at /demo; record requests while starting and trading"
-  }
-  ,
+    "id": "demo-isolation",
+    "claim": "The demo uses isolated temporary state, survives reload, contacts no third party, and is discarded on exit.",
+    "where": "demo banner, privacy page, README",
+    "test": "npm test -- --grep @claim:demo-isolation",
+    "sandbox": "seed a real-data key, play and reload /demo, inspect both storage namespaces and requests, then leave demo"
+  },
+  {
+    "id": "ninety-second-demo",
+    "claim": "One click starts a 90-second practice round.",
+    "where": "landing first screen and README",
+    "test": "npm test -- --grep @claim:ninety-second-demo",
+    "sandbox": "fresh browser context at /; click the sample action and assert the active board and 90-second timer"
+  },
   {
     "id": "online-authority",
-    "claim": "A shared room checks trades on the game server and restores a saved seat after reload.",
-    "where": "room lobby, README",
+    "claim": "Three to eight players share server-checked trades, price impact, and reconnectable room state.",
+    "where": "landing, shared room, README",
     "test": "npm run test:server -- --test-name-pattern @claim:online-authority",
-    "sandbox": "create an in-memory room, start it with three seats, make a server-side trade, serialize the room, and recover the same seat"
+    "sandbox": "start the product server, connect three WebSocket clients, trade, inspect shared price impact, and reconnect the buyer"
+  },
+  {
+    "id": "six-minute-round",
+    "claim": "A shared round lasts six minutes and supports three to eight seats.",
+    "where": "landing and README",
+    "test": "npm run test:server -- --test-name-pattern @claim:six-minute-round",
+    "sandbox": "construct an authoritative room, assert 360 seconds, reject start below three, accept eight, and reject nine"
+  },
+  {
+    "id": "60-fps",
+    "claim": "The fixed-step game targets 60 frames per second on a mid-range phone.",
+    "where": "README and handoff",
+    "test": "npm test -- --grep @claim:60-fps",
+    "sandbox": "Chromium at 390px with 4x CPU throttling; sample requestAnimationFrame for three seconds and require 50–70 fps"
+  },
+  {
+    "id": "fictional-free",
+    "claim": "Closing Bell is free and uses no accounts or real money.",
+    "where": "landing, terms, README",
+    "test": "npm test -- --grep @claim:fictional-free",
+    "sandbox": "fresh browser context at /; assert all three plain facts are visible"
+  },
+  {
+    "id": "settings-persist",
+    "claim": "The sound setting survives reload without crossing from demo into real data.",
+    "where": "sound control and README",
+    "test": "npm test -- --grep @claim:settings-persist",
+    "sandbox": "turn sound off in /demo, reload, and assert the demo setting remains while the real mute key is absent"
   }
 ]

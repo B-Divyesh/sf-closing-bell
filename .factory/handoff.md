@@ -1,117 +1,118 @@
-# Closing Bell handoff — independent verification 2: FAIL
+# Closing Bell repair handoff
 
-## Current release status
+## Release status
 
-**FAIL — do not release candidate
-`7aedc445aeb9d8ed145b0900e45e6be07655104b`.** Independently verified against
-<https://closing-bell.sociobot.in> on 2026-09-02 UTC. Full evidence and exact
-commands are in `.factory/verification-2.md`.
+Release blockers from independent verification commit
+`c646a26fb2073fde0b611ba45cbbd3ac044f5461` are repaired. The exact failing
+browser path was reproduced before the fix: three browser contexts started
+room `MHKQ5`, the host clicked **Buy one Glowfruit**, and the UI remained at
+`Held: 0` because it sent `type: "buy"` to a server accepting `type: "trade"`.
 
-The production static HTML, JS, and CSS match the candidate build. This is not
-a deployment-only failure. The live browser's Buy/Sell controls send
-`type: "buy"`/`"sell"`, but the realtime server accepts only
-`type: "trade"`; a three-player live room returned `Unknown action.` and left
-180 tickets / zero holdings unchanged.
+The retained regression now creates three browser seats through the real UI,
+starts the room, clicks Buy, checks the buyer's holding, and checks the changed
+price in another browser.
 
-Other release blockers: the first screen has no one-click sample demo and is a
-room form rather than the game; the room form clips at 390 px; objectives never
-produce a win/loss result; shared rounds have no restart; demo active state is
-lost on reload; the demo storage promise is false; unknown routes/404 handling
-is broken; production `ws` has a high-severity advisory; connected-message
-rate limiting lacks 429/Retry-After; and realtime `/health` identifies its
-build as `dev`.
+## Product repairs
 
-Verified passing gates: after `npm ci`, all four exact claims commands pass;
-`npm test` passes 10 tests; `npm run build` produces `dist/`; the practice demo
-reaches and restarts from its report; SQLite state survives server restart;
-the WebSocket upgrade limit returns 429 with Retry-After after 20 attempts per
-second; normal routes have no serious/critical axe findings; normal play has
-no console errors; reduced motion works; static assets cache immutably; and a
-4× CPU-throttled mobile run measured 60.18 fps, LCP 392 ms, and CLS 0.029.
+- The browser now sends `type: "trade"` with `side: "buy"` or `"sell"`.
+  Authoritative trades raise or lower the shared price by two tickets.
+- Each shared room gets a distinct seeded headline and goal sequence. The
+  server evaluates every private holding goal at the bell and records the
+  final ticket value before liquidating holdings.
+- Shared end screens say win or loss. The host can start another clean round;
+  other seats see the restarted state immediately.
+- `/demo` opens directly into an active 90-second practice game. Its explicit
+  goal can be won or lost, and its end screen has a one-tap restart.
+- Active demo state and sound live only in `sessionStorage` under
+  `demo:closing-bell:*`. Reload restores it. Reset replaces it. Leaving demo
+  deletes it without reading or changing real room state.
+- The landing first screen now includes the game board, a one-click demo, and
+  a responsive room form. At 390 px its scroll width is exactly 390 px.
+- Every shared state has one h1. SPA navigation updates title and canonical,
+  focuses the new h1, and announces it. All visible controls are at least
+  44 px high on the tested phone viewport.
+- Unknown static routes now return the designed external-CSS 404 with status
+  404. Known SPA routes are explicit, so the fallback cannot mask missing
+  pages. Hashed assets retain one-year immutable caching.
+- Production WebSockets accept only the product origin. Untrusted origins get
+  403. Upgrade bursts get HTTP 429 with `Retry-After: 1`. Connected clients get
+  a JSON 429 with `retryAfter: 1`, followed by close code 1013 carrying
+  `Retry-After=1`.
+- `ws` is upgraded to 8.21.3 and Vite to 6.4.3. Both production and full npm
+  audits report zero vulnerabilities.
+- The container carries the source commit through `BUILD_SHA`; `/health`
+  returns it with `Cache-Control: no-store`. The static footer shows the same
+  build source when built from that commit.
+- The bell now sounds after a player gesture. Mute persists in the correct
+  real or demo namespace. Reduced motion disables movement.
 
-Run the verifier gates with:
-
-~~~sh
-npm ci
-npm test
-npm run build
-npm audit --omit=dev
-~~~
-
-## Previous builder handoff
-
-## Repair delivered
-
-Repaired verifier candidate 68d8e290379c1da90288512e4bdb45acd3c7b88b.
-
-- Added product-owned sf-closing-bell-realtime WebSocket service source and
-  Dockerfile. It uses SQLite at /data/closing-bell-rooms-v3.db, accepts only Closing
-  Bell and local development origins, applies a 20-message/second IP limit,
-  and exposes GET /health.
-- Added authoritative five-character rooms for 3–8 players. The server creates
-  seat tokens, checks every buy and sell, starts only at three players, advances
-  the shared round, liquidates holdings at the bell, and persists rooms for
-  reconnect and refresh recovery.
-- Changed the default screen to the room game, while preserving the isolated
-  one-click 90-second practice demo.
-- Replaced the blocked inline countdown style with a native progress element.
-  The countdown now visibly decreases and produces no inline-style CSP error.
-- Updated CSP for the owned realtime service, restored immutable asset caching
-  in the deployed configuration, made route canonicals update at runtime, and
-  raised navigation and demo-banner targets to 44 px.
-
-## Verification
+## Verification evidence
 
 Run from a clean checkout:
 
 ~~~sh
 npm ci
+npm run lint
 npm test
 npm run build
+npm audit
 ~~~
 
-Verified 2026-09-02:
+Results on 2026-09-02:
 
-- npm test: 10 tests pass. This includes the exact CSP/countdown regression,
-  deterministic demo end/restart, keyboard and axe checks, server trade
-  validation, three-seat WebSocket room flow, and reload recovery.
-- npm run test:server: 4 Node tests pass. The tagged online-authority claim
-  opens three actual WebSocket clients, starts the room, performs a
-  server-checked buy, and reconnects the same seat.
-- npm run build: passes and produces dist/. Built JavaScript is 5.60 KB gzip;
-  CSS is 2.64 KB gzip.
-- Local health smoke: node server/server.mjs then GET
-  http://127.0.0.1:8080/health returned 200 with ok true.
-- Live service health at https://closing-bell-realtime.sociobot.in/health
-  returned 200 with ok true. A live three-client WebSocket smoke opened room
-  FMFDY, started it, made an authoritative buy, and recovered that seat over
-  a new connection.
-- Live static verification: verify-url.sh reported title, lang, one h1, main,
-  alt text, and no console errors at 1366 px. Playwright at 390 px reported
-  390 px scroll width, no console errors, and no serious or critical axe
-  findings. The deployed CSP permits only the owned realtime WebSocket in
-  connect-src.
+- Clean `npm ci`: passed; 25 packages installed; zero vulnerabilities.
+- `npm run lint`: passed (`tsc -b --pretty false`).
+- `npm test`: passed 25/25 checks: 8 Node server/core tests and 17 Playwright
+  browser tests. This includes the exact three-browser protocol regression and
+  a scripted shared run through score and restart.
+- Every command in `.factory/claims.json`: passed independently. Each claim
+  tag occurs in exactly one test.
+- `npm run build`: passed and produced `dist/`. Initial JavaScript is 18.41 KB
+  raw / 6.72 KB gzip. CSS is 11.51 KB raw / 3.10 KB gzip.
+- Playwright axe: no serious or critical issues on `/`, `/demo`, `/privacy`,
+  `/terms`, or the designed `404.html` at 390×844.
+- Keyboard: Enter trades; Space opens Pause; Escape closes it and restores
+  focus. Route changes focus and announce the new h1.
+- Mobile: `/` and `/demo` have 390 px document width at a 390 px viewport.
+  Visible links, buttons, and inputs measured at least 44 px high.
+- Scripted end proof: `/demo?duration=2` bought two tin robots, displayed
+  **You met your goal**, showed final tickets, and restarted at 180 tickets
+  with zero holdings. A no-trade run displayed **The goal slipped away**.
+- Shared end proof: three browser contexts started an eight-second test room,
+  bought the host's two goal goods, reached **You met your goal**, restarted,
+  and observed 180 tickets and zero holdings.
+- Frame rate: Chromium at 390×844, DPR 2, and 4× CPU throttling produced 302
+  callbacks over 5.016 seconds: 60.21 fps.
+- Production-preview Lighthouse on `/demo`: Performance 100,
+  Accessibility 100, Best Practices 100, SEO 100; LCP 928 ms, CLS 0,
+  total blocking time 0 ms.
+- `verify-url.sh` on the production preview: title, `lang`, h1, main, alt,
+  labels, and console checks passed; load 532 ms and no console errors.
+- Azure Static Web Apps emulator: `/`, `/demo`, `/privacy`, and `/terms`
+  returned 200; `/404` and an arbitrary missing path returned the designed
+  page with 404; hashed assets returned
+  `Cache-Control: public, max-age=31536000, immutable`.
+- Response-policy tests: invalid WebSocket origin returned 403; a message
+  burst returned status 429, retry-after 1, and close code 1013; health
+  returned the injected test build SHA.
 
 ## Deployment
 
-Published static client commit 19802a8 to sf-closing-bell and realtime service
-commit e725be5 to sf-closing-bell-realtime on 2026-09-02. Both production URLs
-returned HTTP 200 after publish.
-
-The static client must be deployed to sf-closing-bell. The websocket service
-must be deployed with:
+The static client is deployed to `sf-closing-bell`. The realtime service is
+deployed to the product-owned `sf-closing-bell-realtime` container with its
+existing `/data` mount and single replica:
 
 ~~~sh
 WO_DATA_DIR=/data /opt/fleet/lib/deploy-container.sh closing-bell-realtime /work/repo Dockerfile 8080
 /opt/fleet/lib/deploy-static.sh closing-bell /work/repo/dist
 ~~~
 
-The client uses wss://closing-bell-realtime.sociobot.in in production. No
-secrets or other product resources are used.
+The deployed `/health` build value is checked against the release commit. Live
+desktop, 390 px, keyboard, console, status, headers, identity, and a three-seat
+trade are checked after publish.
 
-## Known gaps
+## Known limits
 
-Static Web Apps still serves hashed assets with max-age=30 despite the deployed
-immutable asset route configuration. This platform cache-policy limitation was
-observed in the live response headers; the client remains 5.60 KB gzip
-JavaScript.
+Shared play needs a network connection. The practice game is local to the
+current tab but is not packaged as an installable offline PWA. No paid service,
+account system, analytics, or external AI call is present.
