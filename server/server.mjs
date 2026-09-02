@@ -9,7 +9,7 @@ const port = Number(process.env.PORT || 8080);
 const dataDir = process.env.DATA_DIR || '/data';
 try { mkdirSync(dataDir, { recursive: true }); } catch { /* local fallback below */ }
 let db;
-try { db = new DatabaseSync(`${dataDir}/closing-bell.db`); } catch { db = new DatabaseSync('./closing-bell.db'); }
+try { db = new DatabaseSync(`${dataDir}/closing-bell-rooms-v1.db`); } catch { db = new DatabaseSync('./closing-bell-rooms-v1.db'); }
 db.exec('PRAGMA busy_timeout = 5000');
 const hasRooms = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='rooms'").get();
 if (!hasRooms) db.exec('CREATE TABLE rooms (code TEXT PRIMARY KEY, state TEXT NOT NULL, updated_at INTEGER NOT NULL)');
