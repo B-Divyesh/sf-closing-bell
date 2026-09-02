@@ -1,0 +1,23 @@
+[
+  {
+    "id": "reaches-bell",
+    "claim": "A practice round reaches a closing report.",
+    "where": "game end screen, README",
+    "test": "npm test -- --grep @claim:reaches-bell",
+    "sandbox": "fresh browser context at /demo?duration=2; start the demo and observe its closing report"
+  },
+  {
+    "id": "restart-resets",
+    "claim": "Play another round starts with 180 tickets and no holdings.",
+    "where": "closing report button, README",
+    "test": "npm test -- --grep @claim:restart-resets",
+    "sandbox": "fresh browser context at /demo?duration=2; reach the report, restart, and inspect the board"
+  },
+  {
+    "id": "local-only",
+    "claim": "Demo play makes no third-party requests.",
+    "where": "privacy page, README",
+    "test": "npm test -- --grep @claim:local-only",
+    "sandbox": "fresh browser context at /demo; record requests while starting and trading"
+  }
+]
