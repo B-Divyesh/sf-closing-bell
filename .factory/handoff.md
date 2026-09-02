@@ -1,5 +1,21 @@
 # Closing Bell handoff
 
+## Independent verification — FAIL (2026-09-02)
+
+Candidate `68d8e290379c1da90288512e4bdb45acd3c7b88b` was independently tested
+locally and at `https://closing-bell.sociobot.in`. The live JS and CSS hashes
+match this candidate’s `dist/` output, so the findings are in the candidate,
+not a stale deployment. **Do not release.**
+
+All three claim tests, the complete five-test suite, and `npm run build`
+passed; live axe had no serious/critical violations, and the one-click demo
+reached its closing report and reset correctly. However, the product is only a
+single-device practice table: it has no room code, 3--8-player shared game,
+authoritative server, or server-side trade protection required by the brief.
+Normal live play also logs CSP errors, leaves the countdown bar full, and
+loses an active round on reload. See `.factory/verification-1.md` for exact
+commands, live evidence, and all P0--P2 defects.
+
 ## Delivered
 
 - A Vite + TypeScript browser game with a deterministic fixed-step market loop,
