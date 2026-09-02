@@ -42,3 +42,15 @@ test('demo has no serious accessibility violations', async ({ page }) => {
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter(v => ['serious', 'critical'].includes(v.impact ?? ''))).toEqual([]);
 });
+
+test('countdown uses a CSP-safe native progress element and does not log CSP errors', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  await page.goto('/demo?duration=4');
+  await page.getByRole('button', { name: /Start the round/ }).click();
+  await expect(page.locator('progress.progress')).toHaveAttribute('max', '4');
+  await expect(page.locator('progress.progress')).not.toHaveAttribute('style');
+  await page.waitForTimeout(1200);
+  await expect(page.locator('progress.progress')).toHaveJSProperty('value', 3);
+  expect(errors.filter(error => /Content Security Policy|style-src/i.test(error))).toEqual([]);
+});

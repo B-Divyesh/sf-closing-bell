@@ -20,4 +20,12 @@
     "test": "npm test -- --grep @claim:local-only",
     "sandbox": "fresh browser context at /demo; record requests while starting and trading"
   }
+  ,
+  {
+    "id": "online-authority",
+    "claim": "A shared room checks trades on the game server and restores a saved seat after reload.",
+    "where": "room lobby, README",
+    "test": "npm run test:server -- --test-name-pattern @claim:online-authority",
+    "sandbox": "create an in-memory room, start it with three seats, make a server-side trade, serialize the room, and recover the same seat"
+  }
 ]

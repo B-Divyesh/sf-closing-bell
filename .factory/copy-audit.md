@@ -2,21 +2,15 @@
 
 | Sentence or label | Words | Result |
 | --- | ---: | --- |
-| Trade funny goods before the bell | 6 | pass |
-| A short fictional-goods game | 5 | pass |
-| For friends who want one lively market round with a clear ending. | 12 | pass |
-| Opens a 90-second practice round. | 5 | pass |
+| Trade fictional goods with friends | 5 | pass |
+| Create a room, share its five-letter code, then trade together until the bell. | 13 | pass |
 | No accounts | 2 | pass |
 | No real money | 3 | pass |
-| Game data stays here | 4 | pass |
-| Try three fictional goods before the practice bell. | 8 | pass |
-| Trade three fictional goods until the closing bell. | 8 | pass |
-| Each player starts with 180 tickets. | 6 | pass |
-| News arrives every 45 seconds. | 6 | pass |
-| Public headlines change every market price. | 6 | pass |
-| Holdings liquidate when the six minutes end. | 7 | pass |
-| It uses fictional goods. | 4 | pass |
-| It has no cash-out, betting, real investments, or financial advice. | 10 | pass |
+| Reconnect after reload | 3 | pass |
+| Room state is checked by the game server. | 8 | pass |
+| Share the five-letter code with two to seven friends. | 10 | pass |
+| The host starts when three players have joined. | 9 | pass |
+| The game server checks every trade and saves room state. | 10 | pass |
 
 No listed sentence exceeds 22 words or uses a banned word.
 
@@ -24,9 +18,9 @@ No listed sentence exceeds 22 words or uses a banned word.
 
 | Concept | Product word |
 | --- | --- |
-| round ending | closing bell |
+| shared session | room |
+| room identifier | room code |
 | score currency | tickets |
 | tradable item | fictional good |
-| repeated player sample | practice market |
-| market event | public headline |
-| personal task | private rumor |
+| round ending | closing bell |
+| server-restored player identity | seat |

@@ -1,61 +1,67 @@
 # Closing Bell handoff
 
-## Independent verification — FAIL (2026-09-02)
+## Repair delivered
 
-Candidate `68d8e290379c1da90288512e4bdb45acd3c7b88b` was independently tested
-locally and at `https://closing-bell.sociobot.in`. The live JS and CSS hashes
-match this candidate’s `dist/` output, so the findings are in the candidate,
-not a stale deployment. **Do not release.**
+Repaired verifier candidate 68d8e290379c1da90288512e4bdb45acd3c7b88b.
 
-All three claim tests, the complete five-test suite, and `npm run build`
-passed; live axe had no serious/critical violations, and the one-click demo
-reached its closing report and reset correctly. However, the product is only a
-single-device practice table: it has no room code, 3--8-player shared game,
-authoritative server, or server-side trade protection required by the brief.
-Normal live play also logs CSP errors, leaves the countdown bar full, and
-loses an active round on reload. See `.factory/verification-1.md` for exact
-commands, live evidence, and all P0--P2 defects.
-
-## Delivered
-
-- A Vite + TypeScript browser game with a deterministic fixed-step market loop,
-  three fictional goods, escalating news, private objectives, buy/sell feedback,
-  automatic liquidation, closing report, pause, sound toggle, and replay.
-- `/demo` is a 90-second seeded practice round with a persistent isolated demo
-  banner and reset. `/demo?duration=2` exists only for automated verification.
-- Local-only storage for mute and best scores, plus `/privacy`, `/terms`,
-  `/404`, metadata, sitemap, security headers, mobile layout, keyboard paths,
-  and reduced-motion handling.
-- Original generated market-floor art. Source PNG, generation prompt sidecar,
-  191 KB desktop WebP, 74 KB mobile WebP, and social crop are included.
+- Added product-owned sf-closing-bell-realtime WebSocket service source and
+  Dockerfile. It uses SQLite at /data/closing-bell.db, accepts only Closing
+  Bell and local development origins, applies a 20-message/second IP limit,
+  and exposes GET /health.
+- Added authoritative five-character rooms for 3–8 players. The server creates
+  seat tokens, checks every buy and sell, starts only at three players, advances
+  the shared round, liquidates holdings at the bell, and persists rooms for
+  reconnect and refresh recovery.
+- Changed the default screen to the room game, while preserving the isolated
+  one-click 90-second practice demo.
+- Replaced the blocked inline countdown style with a native progress element.
+  The countdown now visibly decreases and produces no inline-style CSP error.
+- Updated CSP for the owned realtime service, restored immutable asset caching
+  in the deployed configuration, made route canonicals update at runtime, and
+  raised navigation and demo-banner targets to 44 px.
 
 ## Verification
 
 Run from a clean checkout:
 
-```sh
-npm install
+~~~sh
+npm ci
 npm test
 npm run build
-```
+~~~
 
-Verified on 2026-09-02:
+Verified 2026-09-02:
 
-- `npm test`: 5 passing Playwright tests, including the three claim tests,
-  keyboard operation, and axe serious/critical accessibility check.
-- `npm run build`: passes; `dist/index.html` is at the deploy root.
-- Production bundle: JS 5.17 KB gzip; CSS 2.48 KB gzip. The responsive LCP art
-  is 74 KB on mobile and 191 KB on desktop.
-- Local Lighthouse run on `/demo`: accessibility 100, CLS 0.01. Its Chrome tab
-  crashed during full-page screenshot capture after audits; the incomplete
-  report recorded performance 89 and LCP 3.5 s in the container. Re-run on the
-  deployment target before release for a stable performance number.
+- npm test: 10 tests pass. This includes the exact CSP/countdown regression,
+  deterministic demo end/restart, keyboard and axe checks, server trade
+  validation, three-seat WebSocket room flow, and reload recovery.
+- npm run test:server: 4 Node tests pass. The tagged online-authority claim
+  opens three actual WebSocket clients, starts the room, performs a
+  server-checked buy, and reconnects the same seat.
+- npm run build: passes and produces dist/. Built JavaScript is 5.60 KB gzip;
+  CSS is 2.64 KB gzip.
+- Local health smoke: node server/server.mjs then GET
+  http://127.0.0.1:8080/health returned 200 with ok true.
+- A direct three-client WebSocket smoke opened room RNAMA, started it, and
+  verified the authoritative buy. Room codes are random, so this value is
+  evidence only.
 
-## Known gap / next step
+## Deployment
 
-The work order requests an authoritative online 3–8 player room. Static
-deployment cannot host an authoritative WebSocket service, so this release is
-an honest local practice table and does not imply cross-device play. Add a
-product-owned WebSocket service with room state and server-side trade checks
-before advertising a friend room-code mode. This is also needed to measure the
-brief’s final-90-seconds and second-round retention targets.
+The static client must be deployed to sf-closing-bell. The websocket service
+must be deployed with:
+
+~~~sh
+WO_DATA_DIR=/data /opt/fleet/lib/deploy-container.sh closing-bell-realtime /work/repo Dockerfile 8080
+/opt/fleet/lib/deploy-static.sh closing-bell /work/repo/dist
+~~~
+
+The client uses wss://closing-bell-realtime.sociobot.in in production. No
+secrets or other product resources are used.
+
+## Known gaps
+
+Deployment and final live Lighthouse/axe/response-policy checks have not yet
+been recorded in this handoff. The client and server are committed ready for
+those commands; deploy the realtime service before the static client so the
+room entry point is immediately usable.
