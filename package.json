@@ -12,6 +12,7 @@
     "test": "npm run test:server && playwright test",
     "test:server": "node --test server/*.test.mjs",
     "verify:realtime-release": "node scripts/verify-realtime-release.mjs",
+    "verify:live-shared-run": "node scripts/verify-live-shared-run.mjs",
     "realtime": "node server/server.mjs"
   },
   "devDependencies": {

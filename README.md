@@ -45,6 +45,12 @@ source revision that was released:
 EXPECTED_BUILD_SHA=<git-sha> npm run verify:realtime-release
 ~~~
 
+For a production shared-room check through the six-minute bell, run:
+
+~~~sh
+npm run verify:live-shared-run
+~~~
+
 The suite covers the browser-to-server trade protocol, shared price impact,
 reconnect, demo isolation, keyboard play, 390 px layout, route focus,
 accessibility, response policy, rate limiting, release identity, and the full
