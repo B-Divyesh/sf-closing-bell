@@ -303,7 +303,9 @@ test('the static not-found page keeps the shared navigation and full footer usab
   await expect(footer.getByRole('link',{name:'Privacy'})).toHaveAttribute('href','/privacy');
   await expect(footer.getByRole('link',{name:'Terms'})).toHaveAttribute('href','/terms');
   await expect(footer.getByText('Built by Param Factory')).toBeVisible();
-  await expect(footer.getByText(/^Build \S+$/)).toBeVisible();
+  const buildLabel = footer.locator('#build-id');
+  await expect(buildLabel).toHaveText(/^Build [a-f0-9]{12}$/);
+  const buildId = await buildLabel.innerText();
 
   await footer.getByRole('link',{name:'Terms'}).click();
   await expect(page.getByRole('heading',{level:1,name:'Play with fictional goods only'})).toBeVisible();
@@ -312,6 +314,7 @@ test('the static not-found page keeps the shared navigation and full footer usab
   await page.locator('header').getByRole('link',{name:'Demo'}).click();
   await expect(page).toHaveURL(/\/demo$/);
   await expect(page.getByRole('heading',{level:1,name:'Trade the practice market'})).toBeVisible();
+  await expect(page.locator('footer').getByText(buildId,{exact:true})).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   expect(consoleErrors).toEqual([]);
 });
