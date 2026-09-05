@@ -50,6 +50,25 @@ test('a scripted shared run reaches its scored end screen and restarts', async (
 test('@claim:timed-private-rumors each shared seat receives a private market update that moves prices', async ({ browser }) => {
   const contexts = await Promise.all([0,1,2].map(() => browser.newContext()));
   const pages = await Promise.all(contexts.map(context => context.newPage()));
+  type State = {
+    type:'state';
+    room:{
+      rumorBeat:number;
+      rumor:string;
+      objective:string;
+      goods:Array<{price:number}>;
+      players:Array<Record<string,unknown> & {isYou:boolean}>;
+    };
+  };
+  const receivedStates:State[][] = pages.map(() => []);
+  pages.forEach((page,index) => page.on('websocket',socket => {
+    socket.on('framereceived',frame => {
+      try {
+        const value = JSON.parse(frame.payload.toString()) as State;
+        if (value.type === 'state') receivedStates[index].push(value);
+      } catch { /* only inspect JSON state frames */ }
+    });
+  }));
   try {
     await Promise.all(pages.map(page => page.goto('/')));
     await pages[0].getByRole('button',{name:/Create a room/}).click();
@@ -59,14 +78,33 @@ test('@claim:timed-private-rumors each shared seat receives a private market upd
       await page.getByRole('button',{name:/Join this room/}).click();
     }
     await pages[0].getByRole('button',{name:/Open the market/}).click();
-    const openingPrices = await pages[0].locator('.price').allTextContents();
-    const openingRumor = await pages[0].locator('.rumor').textContent();
+    const openingPrices = await Promise.all(pages.map(page => page.locator('.price').allTextContents()));
+    const openingRumors = await Promise.all(pages.map(page => page.locator('.rumor').textContent()));
 
-    await expect.poll(async () => pages[0].locator('.rumor').textContent(),{timeout:5_000})
-      .not.toBe(openingRumor);
-    await expect.poll(async () => pages[0].locator('.price').allTextContents(),{timeout:5_000})
-      .not.toEqual(openingPrices);
-    expect(await pages[0].locator('.rumor').textContent()).not.toBe(await pages[1].locator('.rumor').textContent());
+    await Promise.all(pages.map((page,index) => expect.poll(
+      async () => page.locator('.rumor').textContent(),
+      {timeout:5_000,message:`seat ${index + 1} receives its first private rumor`}
+    ).not.toBe(openingRumors[index])));
+
+    const updatedPrices = await Promise.all(pages.map(page => page.locator('.price').allTextContents()));
+    const updatedRumors = await Promise.all(pages.map(page => page.locator('.rumor').textContent()));
+    updatedPrices.forEach((prices,index) => expect(prices,`seat ${index + 1} sees changed shared prices`).not.toEqual(openingPrices[index]));
+    expect(updatedRumors[0]).not.toBe(updatedRumors[1]);
+
+    await expect.poll(
+      () => receivedStates.filter(states => states.some(state => state.room.rumorBeat === 1)).length,
+      {timeout:5_000,message:'all three clients receive the authoritative timed state'}
+    ).toBe(3);
+    receivedStates.forEach((states,index) => {
+      const state = states.findLast(value => value.room.rumorBeat === 1)!;
+      expect(state.room.rumor,`seat ${index + 1} protocol rumor`).toContain(updatedRumors[index]!.replace('Private rumor 1:', '').trim());
+      expect(state.room.objective,`seat ${index + 1} receives one private goal`).not.toBe('');
+      expect(state.room.players.filter(player => player.isYou),`seat ${index + 1} has one private player record`).toHaveLength(1);
+      for (const otherSeat of state.room.players.filter(player => !player.isYou)) {
+        expect(Object.keys(otherSeat).sort(),`seat ${index + 1} cannot read another seat's private fields`)
+          .toEqual(['connected','id','isYou','name']);
+      }
+    });
   } finally { await Promise.all(contexts.map(context => context.close())); }
 });
 

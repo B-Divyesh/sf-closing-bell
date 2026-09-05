@@ -70,12 +70,19 @@ test('each 45-second market update gives every seat a private rumor and changes 
 
   const hostView = snapshot(room, 'host').room;
   const secondView = snapshot(room, 'two').room;
-  assert.equal(hostView.rumorBeat, 1);
-  assert.ok(PRIVATE_RUMORS.some(([text]) => text === hostView.rumor));
+  const thirdView = snapshot(room, 'three').room;
+  const views = [hostView, secondView, thirdView];
+  for (const view of views) {
+    assert.equal(view.rumorBeat, 1);
+    assert.ok(PRIVATE_RUMORS.some(([text]) => text === view.rumor));
+    assert.equal(view.players.filter(player => player.isYou).length, 1);
+    for (const otherSeat of view.players.filter(player => !player.isYou)) {
+      assert.deepEqual(Object.keys(otherSeat).sort(), ['connected', 'id', 'isYou', 'name']);
+      assert.equal('cash' in otherSeat, false);
+      assert.equal('holdings' in otherSeat, false);
+      assert.equal('rumor' in otherSeat, false);
+      assert.equal('objective' in otherSeat, false);
+    }
+  }
   assert.notEqual(hostView.rumor, secondView.rumor);
-
-  const otherSeat = hostView.players.find(player => !player.isYou);
-  assert.deepEqual(Object.keys(otherSeat).sort(), ['connected', 'id', 'isYou', 'name']);
-  assert.equal('rumor' in otherSeat, false);
-  assert.equal('objective' in otherSeat, false);
 });

@@ -1,4 +1,4 @@
-import test, { after, before } from 'node:test';
+import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -9,6 +9,7 @@ import WebSocket from 'ws';
 const port = 8183;
 let dataDir;
 let service;
+let serviceStart;
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function waitForHealth() {
@@ -17,6 +18,18 @@ async function waitForHealth() {
     await wait(50);
   }
   throw new Error('Realtime service did not start');
+}
+async function ensureService() {
+  if (service) return;
+  if (!serviceStart) serviceStart = (async () => {
+    dataDir = await mkdtemp(join(tmpdir(), 'closing-bell-'));
+    service = spawn(process.execPath, ['--experimental-sqlite', 'server/start.mjs'], {
+      env:{...process.env,PORT:String(port),DATA_DIR:dataDir,BUILD_SHA:'test-build-c646a26',MESSAGE_RATE_LIMIT:'8'},
+      stdio:'ignore'
+    });
+    await waitForHealth();
+  })();
+  await serviceStart;
 }
 async function restartService() {
   const previous = service;
@@ -29,23 +42,17 @@ async function restartService() {
   });
   await waitForHealth();
 }
-const open = (origin = 'http://127.0.0.1:4173') => new Promise((resolve, reject) => {
-  const socket = new WebSocket(`ws://127.0.0.1:${port}`, { headers:{origin} });
-  socket.once('open', () => resolve(socket));
-  socket.once('error', reject);
-});
+const open = async (origin = 'http://127.0.0.1:4173') => {
+  await ensureService();
+  return new Promise((resolve, reject) => {
+    const socket = new WebSocket(`ws://127.0.0.1:${port}`, { headers:{origin} });
+    socket.once('open', () => resolve(socket));
+    socket.once('error', reject);
+  });
+};
 const message = socket => new Promise((resolve, reject) => {
   const timer = setTimeout(() => reject(new Error('WebSocket state timeout')), 3000);
   socket.once('message', body => { clearTimeout(timer); resolve(JSON.parse(body.toString())); });
-});
-
-before(async () => {
-  dataDir = await mkdtemp(join(tmpdir(), 'closing-bell-'));
-  service = spawn(process.execPath, ['--experimental-sqlite', 'server/start.mjs'], {
-    env:{...process.env,PORT:String(port),DATA_DIR:dataDir,BUILD_SHA:'test-build-c646a26',MESSAGE_RATE_LIMIT:'8'},
-    stdio:'ignore'
-  });
-  await waitForHealth();
 });
 
 after(async () => {
@@ -54,6 +61,7 @@ after(async () => {
 });
 
 test('health exposes the running build SHA', async () => {
+  await ensureService();
   const response = await fetch(`http://127.0.0.1:${port}/health`);
   assert.equal(response.status,200);
   assert.deepEqual(await response.json(),{ok:true,service:'closing-bell-realtime',build:'test-build-c646a26'});
@@ -61,6 +69,7 @@ test('health exposes the running build SHA', async () => {
 });
 
 test('the WebSocket origin policy rejects an untrusted site with 403', async () => {
+  await ensureService();
   const status = await new Promise((resolve,reject) => {
     const socket = new WebSocket(`ws://127.0.0.1:${port}`,{headers:{origin:'https://attacker.example'}});
     socket.once('unexpected-response',(_,response) => resolve(response.statusCode));
