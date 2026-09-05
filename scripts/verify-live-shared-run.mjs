@@ -35,7 +35,7 @@ try {
 
   await pages[0].getByRole('button', { name: 'Open the market' }).click();
   await pages[0].getByText('Time to bell').waitFor();
-  const goal = (await pages[0].locator('.rumor').textContent()) || '';
+  const goal = (await pages[0].locator('.goal').textContent()) || '';
   const good = goodFromGoal(goal);
   await pages[0].getByRole('button', { name: `Buy one ${good}` }).click();
   await pages[0].getByRole('button', { name: `Buy one ${good}` }).click();

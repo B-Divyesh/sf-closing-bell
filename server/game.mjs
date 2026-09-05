@@ -13,13 +13,26 @@ export const HEADLINES = [
   ['A toy museum opens a robot repair desk.', [0, 0, 9]]
 ];
 
+// These notes are sent only to the seat that receives them. Their price moves
+// are still authoritative and shared, so friends can choose whether to share
+// what they heard while they react to the resulting market.
+export const PRIVATE_RUMORS = [
+  ['A dock note says Glowfruit crates are scarce, vanes are steady, and robot parts are late.', [3, -2, 1]],
+  ['A repair ledger says Glowfruit is soft, weather vanes are wanted, and robots are steady.', [-2, 3, 1]],
+  ['A school order says Glowfruit is steady, vanes are scarce, and tin robots are wanted.', [1, -1, 3]],
+  ['A courier note says Glowfruit is delayed, vanes are steady, and robot parts arrived early.', [-3, 1, 2]],
+  ['A warehouse tally says Glowfruit and vanes are wanted, while robot crates are plentiful.', [2, 2, -2]],
+  ['A private invoice says Glowfruit is steady, vanes are wanted, and robots are delayed.', [-1, 3, -2]]
+];
+
 export function newRoom(code, hostId, hostName, now = Date.now()) {
   const seed = seedFrom(code, now);
   return {
     code, hostId, phase: 'lobby', createdAt: now, updatedAt: now, seed,
     seconds: 360, total: 360, headlineIndex: -1, headline: 'Invite two to seven friends, then open the market.',
+    rumorBeat: 0,
     goods: GOODS.map(g => ({ ...g, start: g.price })),
-    players: [{ id: hostId, name: cleanName(hostName), cash: 180, holdings: [0, 0, 0], connected: true, objective: seed % 3, objectiveMet: null, finalCash: null }]
+    players: [newPlayer(hostId, hostName, seed % 3, seed % PRIVATE_RUMORS.length)]
   };
 }
 
@@ -31,7 +44,12 @@ export function cleanName(value) {
 export function join(room, id, name) {
   if (room.phase !== 'lobby') return { ok: false, error: 'This market has already started.' };
   if (room.players.length >= 8) return { ok: false, error: 'This room already has eight players.' };
-  room.players.push({ id, name: cleanName(name), cash: 180, holdings: [0, 0, 0], connected: true, objective: (room.seed + room.players.length) % 3, objectiveMet: null, finalCash: null });
+  room.players.push(newPlayer(
+    id,
+    name,
+    (room.seed + room.players.length) % 3,
+    (room.seed + room.players.length * 3) % PRIVATE_RUMORS.length
+  ));
   return { ok: true };
 }
 
@@ -48,12 +66,16 @@ export function restart(room, playerId) {
   room.seed = nextSeed(room.seed);
   room.goods = GOODS.map(g => ({ ...g, start: g.price }));
   room.seconds = room.total;
+  room.rumorBeat = 0;
   room.players.forEach((player, index) => {
     player.cash = 180;
     player.holdings = [0, 0, 0];
     player.objective = (room.seed + index) % 3;
     player.objectiveMet = null;
     player.finalCash = null;
+    player.rumor = '';
+    player.rumorBeat = 0;
+    player.rumorOffset = (room.seed + index * 3) % PRIVATE_RUMORS.length;
   });
   openRound(room);
   return { ok: true };
@@ -77,15 +99,17 @@ export function trade(room, playerId, goodId, side) {
   return { ok: true, status: `${player.name} ${side === 'buy' ? 'bought' : 'sold'} one ${room.goods[index].name} for ${price} tickets.` };
 }
 
-export function advance(room, seconds = 1) {
+export function advance(room, seconds = 1, eventEverySeconds = 45) {
   if (room.phase !== 'playing') return;
   for (let i = 0; i < seconds && room.phase === 'playing'; i += 1) {
     room.seconds -= 1;
     const elapsed = room.total - room.seconds;
-    if (elapsed > 0 && elapsed % 45 === 0) {
+    if (room.seconds > 0 && elapsed > 0 && elapsed % eventEverySeconds === 0) {
       room.headlineIndex = (room.headlineIndex + 1) % HEADLINES.length;
       room.headline = HEADLINES[room.headlineIndex][0];
-      changePrices(room, HEADLINES[room.headlineIndex][1], room.seconds <= 90 ? 1.75 : 1);
+      const multiplier = room.seconds <= 90 ? 1.75 : 1;
+      changePrices(room, HEADLINES[room.headlineIndex][1], multiplier);
+      publishPrivateRumors(room, multiplier);
     }
     if (room.seconds > 0 && elapsed % 3 === 0) drift(room);
     if (room.seconds <= 0) finish(room);
@@ -95,11 +119,16 @@ export function advance(room, seconds = 1) {
 export function snapshot(room, token) {
   const mine = room.players.find(p => p.id === token);
   const objective = mine ? ['Finish with two Glowfruit.', 'Finish with two weather vanes.', 'Finish with two tin robots.'][mine.objective] : '';
+  const rumor = mine?.rumor || 'No private rumor yet. The first arrives after 45 seconds.';
   return {
     type: 'state', room: {
       code: room.code, hostId: room.hostId, phase: room.phase, seconds: room.seconds, total: room.total,
-      headline: room.headline, goods: room.goods, players: room.players.map(p => ({ ...p, isYou: p.id === token })),
-      objective,
+      headline: room.headline,
+      goods: room.goods,
+      players: room.players.map(p => p.id === token
+        ? { id: p.id, name: p.name, cash: p.cash, holdings: p.holdings, connected: p.connected, isYou: true }
+        : { id: p.id, name: p.name, connected: p.connected, isYou: false }),
+      objective, rumor, rumorBeat: mine?.rumorBeat || 0,
       outcome: mine?.objectiveMet == null ? null : {
         won: mine.objectiveMet,
         finalCash: mine.finalCash,
@@ -111,6 +140,7 @@ export function snapshot(room, token) {
 
 function openRound(room) {
   room.phase = 'playing';
+  room.rumorBeat ||= 0;
   room.headlineIndex = room.seed % HEADLINES.length;
   room.headline = HEADLINES[room.headlineIndex][0];
   changePrices(room, HEADLINES[room.headlineIndex][1], 1);
@@ -125,6 +155,26 @@ function seedFrom(code, now) {
 function nextSeed(seed) { return (Math.imul(seed, 1664525) + 1013904223) >>> 0; }
 function changePrices(room, moves, multiplier) { room.goods.forEach((g, i) => { g.price = Math.max(8, Math.round(g.price + moves[i] * multiplier)); }); }
 function drift(room) { room.seed = nextSeed(room.seed); room.goods.forEach((g, i) => { const n = ((room.seed >>> (i * 7)) % 7) - 3; g.price = Math.max(8, g.price + n); }); }
+function newPlayer(id, name, objective, rumorOffset) {
+  return {
+    id, name: cleanName(name), cash: 180, holdings: [0, 0, 0], connected: true,
+    objective, objectiveMet: null, finalCash: null, rumor: '', rumorBeat: 0, rumorOffset
+  };
+}
+function publishPrivateRumors(room, multiplier) {
+  room.rumorBeat = (room.rumorBeat || 0) + 1;
+  room.players.forEach((player, index) => {
+    // Existing durable rooms from before rumors did not have these fields.
+    const offset = Number.isInteger(player.rumorOffset)
+      ? player.rumorOffset
+      : (room.seed + index * 3) % PRIVATE_RUMORS.length;
+    player.rumorOffset = offset;
+    const rumor = PRIVATE_RUMORS[(offset + room.rumorBeat - 1) % PRIVATE_RUMORS.length];
+    player.rumor = rumor[0];
+    player.rumorBeat = room.rumorBeat;
+    changePrices(room, rumor[1], multiplier);
+  });
+}
 function finish(room) {
   room.phase = 'finished'; room.headline = 'The bell rang. Holdings were liquidated.';
   room.players.forEach(p => {

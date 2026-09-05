@@ -30,9 +30,16 @@
   {
     "id": "online-authority",
     "claim": "Three to eight players share server-checked trades, price impact, and reconnectable room state.",
-    "where": "landing, shared room, README",
+    "where": "landing, shared room, privacy page, README",
     "test": "npm run test:server -- --test-name-pattern @claim:online-authority",
     "sandbox": "start the product server, connect three WebSocket clients, trade, inspect shared price impact, and reconnect the buyer"
+  },
+  {
+    "id": "timed-private-rumors",
+    "claim": "Every 45-second shared-market update gives each seat a private rumor while prices change.",
+    "where": "landing, shared room, README",
+    "test": "npm test -- --grep @claim:timed-private-rumors",
+    "sandbox": "three fresh browser contexts create a room; the test server accelerates the same 45-second event rule, then asserts distinct visible private rumors and changed prices"
   },
   {
     "id": "six-minute-round",
@@ -49,11 +56,18 @@
     "sandbox": "Chromium at 390px with 4x CPU throttling; sample requestAnimationFrame for three seconds and require 50–70 fps"
   },
   {
+    "id": "text-reflow",
+    "claim": "The active game remains usable at 200% text size on a 390px screen.",
+    "where": "game accessibility support",
+    "test": "npm test -- --grep @claim:text-reflow",
+    "sandbox": "fresh Chromium page at 390px; set text size to 200%, prove no horizontal clipping, then complete a trade"
+  },
+  {
     "id": "fictional-free",
-    "claim": "Closing Bell is free and uses no accounts or real money.",
-    "where": "landing, terms, README",
+    "claim": "A new player can trade the sample without an account or payment step.",
+    "where": "landing facts, terms, privacy page, README",
     "test": "npm test -- --grep @claim:fictional-free",
-    "sandbox": "fresh browser context at /; assert all three plain facts are visible"
+    "sandbox": "fresh browser context at /; start the sample, complete a trade, and assert requests stay on the product origin"
   },
   {
     "id": "settings-persist",

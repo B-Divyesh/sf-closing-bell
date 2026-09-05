@@ -4,9 +4,9 @@ declare const __BUILD_SHA__: string;
 
 type Good = { id:string; name:string; mark:string; color:string; price:number; start:number; holding:number };
 type Outcome = { won:boolean; finalCash:number; objective:string };
-type Game = { phase:'playing'|'finished'; cash:number; goods:Good[]; remainingMs:number; total:number; headline:number; nextNewsAt:number; status:string; mute:boolean; outcome:Outcome|null };
-type Player = { id:string; name:string; cash:number; holdings:number[]; connected:boolean; isYou:boolean };
-type Room = { code:string; hostId:string; phase:'lobby'|'playing'|'finished'; seconds:number; total:number; headline:string; goods:Omit<Good,'holding'>[]; players:Player[]; objective:string; outcome:Outcome|null };
+type Game = { phase:'playing'|'finished'; cash:number; goods:Good[]; remainingMs:number; total:number; headline:number; rumor:number; nextNewsAt:number; status:string; mute:boolean; outcome:Outcome|null };
+type Player = { id:string; name:string; cash?:number; holdings?:number[]; connected:boolean; isYou:boolean };
+type Room = { code:string; hostId:string; phase:'lobby'|'playing'|'finished'; seconds:number; total:number; headline:string; goods:Omit<Good,'holding'>[]; players:Player[]; objective:string; rumor:string; rumorBeat:number; outcome:Outcome|null };
 
 const base = [
   { id:'citrus', name:'Glowfruit', mark:'GF', color:'lime', price:38 },
@@ -18,6 +18,12 @@ const news = [
   ['A gusty parade needs weather vanes.', [-2,9,0]],
   ['The school fair wants tiny robot ushers.', [0,-2,10]],
   ['A rain shower spoils one Glowfruit crate.', [-8,2,-1]]
+] as const;
+const privateRumors = [
+  ['A dock note says Glowfruit crates are scarce, vanes are steady, and robot parts are late.', [3,-2,1]],
+  ['A repair ledger says Glowfruit is soft, weather vanes are wanted, and robots are steady.', [-2,3,1]],
+  ['A school order says Glowfruit is steady, vanes are scarce, and tin robots are wanted.', [1,-1,3]],
+  ['A courier note says Glowfruit is delayed, vanes are steady, and robot parts arrived early.', [-3,1,2]]
 ] as const;
 const app = document.querySelector<HTMLDivElement>('#app')!;
 const demoStateKey = 'demo:closing-bell:run';
@@ -96,7 +102,7 @@ function newGame():Game {
   const value:Game = {
     phase:'playing', cash:180,
     goods:base.map(good => ({...good, start:good.price, holding:0})),
-    remainingMs:total * 1000, total, headline:-1, nextNewsAt:12,
+    remainingMs:total * 1000, total, headline:-1, rumor:-1, nextNewsAt:12,
     status:'The market is open. Make your first trade.', mute:false, outcome:null
   };
   headline(value);
@@ -110,7 +116,10 @@ function saveDemo() {
 function loadDemo():Game {
   try {
     const saved = JSON.parse(sessionStorage.getItem(demoStateKey) || 'null') as Game|null;
-    if (saved && saved.total === demoDuration() && Array.isArray(saved.goods)) return saved;
+    if (saved && saved.total === demoDuration() && Array.isArray(saved.goods)) {
+      saved.rumor ??= -1;
+      return saved;
+    }
   } catch { /* start a clean sample */ }
   const fresh = newGame();
   sessionStorage.setItem(demoStateKey, JSON.stringify(fresh));
@@ -140,9 +149,9 @@ function page(path:string) {
   const terms = path === '/terms';
   const heading = privacy ? 'Keep game data under your control' : terms ? 'Play with fictional goods only' : 'This board is not open';
   const body = privacy
-    ? '<p>Shared rooms store an anonymous seat token in this browser. The Closing Bell server stores room state and trades so players can reconnect.</p><p>The practice demo uses temporary session storage with keys beginning <code>demo:closing-bell</code>. Leaving demo mode removes those keys.</p><p>Closing Bell has no accounts, analytics, ads, or third-party services.</p>'
+    ? '<p>Shared rooms store an anonymous seat token in this browser. The Closing Bell server stores room state and trades so players can reconnect.</p><p>The practice demo uses temporary session storage with keys beginning <code>demo:closing-bell</code>. Leaving demo mode removes those keys.</p><p>No account is needed to create or join a room.</p>'
     : terms
-      ? '<p>Closing Bell is free to play. It has no real assets, money, betting, prizes, or financial advice.</p><p>Use a name you are comfortable sharing with the other players in your room.</p>'
+      ? '<p>Closing Bell uses fictional goods and game tickets. It has no cash-out or payment step.</p><p>Use a name you are comfortable sharing with the other players in your room.</p>'
       : '<p>The page you requested does not exist.</p><p><a class="button" href="/" data-route>Return to the game</a></p>';
   app.innerHTML = `${nav()}<main id="main" class="copy-page"><article><h1>${heading}</h1>${body}</article></main>${foot()}${announcer()}`;
   finishRoute(heading);
@@ -157,7 +166,7 @@ function setupRoom() {
 }
 
 function landing() {
-  return `<section class="hero"><div class="hero-copy"><p class="eyebrow">A short fictional-goods game</p><h1>Trade goods together before the bell</h1><p class="lede">For three to eight friends who want one six-minute market round.</p><div class="hero-actions"><a class="button primary" href="/demo" data-route>Try it with sample data <span>→</span></a><span>Starts a private 90-second practice round.</span></div><ul class="facts"><li>No accounts</li><li>No real money</li><li>Free to play</li></ul></div>${marketPreview()}</section><section class="play-area">${setupRoom()}</section><section class="how"><h2>How the shared round works</h2><ol><li><b>Create a room.</b><span>Share the five-letter code with two to seven friends.</span></li><li><b>Read the market.</b><span>News and player trades move each price.</span></li><li><b>Meet your goal.</b><span>Hold the right goods when the bell rings.</span></li></ol></section><section class="limits"><h2>Fictional goods, real group decisions</h2><p>This is a social game. It does not use real money, prizes, betting, or financial advice.</p></section>`;
+  return `<section class="hero"><div class="hero-copy"><p class="eyebrow">A short fictional-goods game</p><h1>Trade goods together before the bell</h1><p class="lede">For three to eight friends who want one six-minute market round.</p><div class="hero-actions"><a class="button primary" href="/demo" data-route>Try it with sample data <span>→</span></a><span>Starts a private 90-second practice round.</span></div><ul class="facts"><li>No account needed</li><li>No real money</li><li>Free to play</li></ul></div>${marketPreview()}</section><section class="play-area">${setupRoom()}</section><section class="how"><h2>How the shared round works</h2><ol><li><b>Create a room.</b><span>Share the five-letter code with two to seven friends.</span></li><li><b>Read the market.</b><span>Headlines, private rumors, and trades move each price.</span></li><li><b>Meet your goal.</b><span>Hold the right goods when the bell rings.</span></li></ol></section><section class="limits"><h2>Game limits</h2><p>Trade fictional goods with game tickets. There are no prizes or cash-out.</p></section>`;
 }
 
 function card(g:Good|Omit<Good,'holding'>, index:number, held:number, shared=false) {
@@ -175,7 +184,8 @@ function portfolio(value:Game) {
 
 function practiceBoard(value:Game) {
   const seconds = Math.ceil(value.remainingMs / 1000);
-  return `<section class="game-shell" aria-label="Practice market game"><h1 class="screen-title">Trade the practice market</h1><div class="board-top"><div><p class="eyebrow">90-second practice</p><p class="status" aria-live="polite">${value.status}</p></div><div class="timer"><span>Time to bell</span><strong data-timer>${time(seconds)}</strong></div></div>${progress(seconds,value.total)}<div class="headline"><span aria-hidden="true">!</span><div><p class="eyebrow">Public headline</p><h2>${news[value.headline][0]}</h2></div></div><p class="rumor"><strong>Your goal:</strong> Finish holding at least two tin robots.</p><div class="goods">${value.goods.map((good,index) => card(good,index,good.holding)).join('')}</div><aside class="wallet"><div><span>Tickets</span><strong data-cash>${value.cash}</strong></div><div><span>Desk value</span><strong>${portfolio(value)}</strong></div><div><span>Holdings</span><strong>${value.goods.reduce((sum,good) => sum + good.holding,0)}</strong></div></aside><div class="game-controls"><button class="button quiet" data-action="pause">Pause</button><button class="button quiet" data-action="mute">Sound: ${value.mute?'off':'on'}</button></div></section>`;
+  const rumor = value.rumor >= 0 ? privateRumors[value.rumor][0] : 'No private rumor yet. The first arrives with the next market update.';
+  return `<section class="game-shell" aria-label="Practice market game"><h1 class="screen-title">Trade the practice market</h1><div class="board-top"><div><p class="eyebrow">90-second practice</p><p class="status" aria-live="polite">${value.status}</p></div><div class="timer"><span>Time to bell</span><strong data-timer>${time(seconds)}</strong></div></div>${progress(seconds,value.total)}<div class="headline"><span aria-hidden="true">!</span><div><p class="eyebrow">Public headline</p><h2>${news[value.headline][0]}</h2></div></div><section class="private-brief" aria-label="Your private market information"><p class="goal"><strong>Your goal:</strong> Finish holding at least two tin robots.</p><p class="rumor"><strong>Private rumor:</strong> ${rumor}</p></section><div class="goods">${value.goods.map((good,index) => card(good,index,good.holding)).join('')}</div><aside class="wallet"><div><span>Tickets</span><strong data-cash>${value.cash}</strong></div><div><span>Desk value</span><strong>${portfolio(value)}</strong></div><div><span>Holdings</span><strong>${value.goods.reduce((sum,good) => sum + good.holding,0)}</strong></div></aside><div class="game-controls"><button class="button quiet" data-action="pause">Pause</button><button class="button quiet" data-action="mute">Sound: ${value.mute?'off':'on'}</button></div></section>`;
 }
 
 function demoEnd(value:Game) {
@@ -251,6 +261,12 @@ function headline(value:Game) {
   value.status = item[0];
 }
 
+function privateRumor(value:Game) {
+  value.rumor = (value.rumor + 1) % privateRumors.length;
+  const item = privateRumors[value.rumor];
+  value.goods.forEach((good,index) => { good.price = Math.max(8,good.price + item[1][index]); });
+}
+
 function endDemo(value:Game) {
   const won = value.goods[2].holding >= 2;
   value.phase = 'finished';
@@ -264,13 +280,14 @@ function endDemo(value:Game) {
 function remoteBoard(value:Room) {
   const me = value.players.find(player => player.isYou);
   const host = me?.id === value.hostId;
+  const myHoldings = me?.holdings || [0,0,0];
   const finished = value.phase === 'finished' && value.outcome;
   const controls = value.phase === 'lobby'
     ? host ? '<div class="game-controls"><button class="button primary" data-remote="start">Open the market</button></div>' : '<p>Only the host opens the market after three players join.</p>'
     : finished
       ? host ? '<div class="game-controls"><button class="button primary" data-remote="restart">Play another round</button></div>' : '<p>The host can start the next market.</p>'
       : '';
-  return `<section class="game-shell" aria-label="Shared market game"><h1 class="screen-title">Trade the shared market</h1><div class="board-top"><div><p class="eyebrow">Room ${value.code} · ${value.players.length}/8 seats</p><p class="status" aria-live="polite">${value.phase === 'lobby'?'Waiting for three players. Share the room code.':value.headline}</p></div><div class="timer"><span>${value.phase === 'lobby'?'Room code':'Time to bell'}</span><strong>${value.phase === 'lobby'?value.code:time(value.seconds)}</strong></div></div>${value.phase === 'lobby'?'':progress(value.seconds,value.total)}${finished?`<section class="end-card ${finished.won?'win':'loss'}"><p class="eyebrow">Closing report</p><h2>${finished.won?'You met your goal':'The goal slipped away'}</h2><p>${finished.objective}</p><p>You finished with <strong>${finished.finalCash} tickets</strong>.</p>${controls}</section>`:`<div class="headline"><span aria-hidden="true">!</span><div><p class="eyebrow">${value.phase === 'lobby'?'Invite friends':'Public headline'}</p><h2>${value.phase === 'lobby'?`Share ${value.code}. The host opens the market at three players.`:value.headline}</h2></div></div><p class="rumor"><strong>Your goal:</strong> ${value.objective || 'Reconnect to your seat.'}</p><div class="goods">${value.goods.map((good,index) => card(good,index,me?.holdings[index] || 0,true)).join('')}</div><aside class="wallet"><div><span>Tickets</span><strong>${me?.cash ?? 0}</strong></div><div><span>Desk value</span><strong>${(me?.cash ?? 0) + value.goods.reduce((sum,good,index) => sum + good.price * (me?.holdings[index] || 0),0)}</strong></div><div><span>Holdings</span><strong>${me?.holdings.reduce((sum,count) => sum + count,0) ?? 0}</strong></div></aside>${controls}`}<section class="players"><h2>Players</h2><ul>${value.players.map(player => `<li>${player.name}${player.isYou?' (you)':''} <span>${player.connected?'connected':'reconnecting'}</span></li>`).join('')}</ul></section><div class="game-controls"><button class="button quiet" data-setting="mute">Sound: ${localStorage.getItem('closing-bell:mute')==='yes'?'off':'on'}</button></div></section>`;
+  return `<section class="game-shell" aria-label="Shared market game"><h1 class="screen-title">Trade the shared market</h1><div class="board-top"><div><p class="eyebrow">Room ${value.code} · ${value.players.length}/8 seats</p><p class="status" aria-live="polite">${value.phase === 'lobby'?'Waiting for three players. Share the room code.':value.headline}</p></div><div class="timer"><span>${value.phase === 'lobby'?'Room code':'Time to bell'}</span><strong>${value.phase === 'lobby'?value.code:time(value.seconds)}</strong></div></div>${value.phase === 'lobby'?'':progress(value.seconds,value.total)}${finished?`<section class="end-card ${finished.won?'win':'loss'}"><p class="eyebrow">Closing report</p><h2>${finished.won?'You met your goal':'The goal slipped away'}</h2><p>${finished.objective}</p><p>You finished with <strong>${finished.finalCash} tickets</strong>.</p>${controls}</section>`:`<div class="headline"><span aria-hidden="true">!</span><div><p class="eyebrow">${value.phase === 'lobby'?'Invite friends':'Public headline'}</p><h2>${value.phase === 'lobby'?`Share ${value.code}. The host opens the market at three players.`:value.headline}</h2></div></div><section class="private-brief" aria-label="Your private market information"><p class="goal"><strong>Your goal:</strong> ${value.objective || 'Reconnect to your seat.'}</p><p class="rumor"><strong>Private rumor${value.rumorBeat ? ` ${value.rumorBeat}` : ''}:</strong> ${value.rumor}</p></section><div class="goods">${value.goods.map((good,index) => card(good,index,myHoldings[index] || 0,true)).join('')}</div><aside class="wallet"><div><span>Tickets</span><strong>${me?.cash ?? 0}</strong></div><div><span>Desk value</span><strong>${(me?.cash ?? 0) + value.goods.reduce((sum,good,index) => sum + good.price * myHoldings[index],0)}</strong></div><div><span>Holdings</span><strong>${myHoldings.reduce((sum,count) => sum + count,0)}</strong></div></aside>${controls}`}<section class="players"><h2>Players</h2><ul>${value.players.map(player => `<li>${player.name}${player.isYou?' (you)':''} <span>${player.connected?'connected':'reconnecting'}</span></li>`).join('')}</ul></section><div class="game-controls"><button class="button quiet" data-setting="mute">Sound: ${localStorage.getItem('closing-bell:mute')==='yes'?'off':'on'}</button></div></section>`;
 }
 
 function renderRoom() {
@@ -349,6 +366,7 @@ function tickDemo(step:number) {
   const elapsed = value.total - Math.ceil(value.remainingMs / 1000);
   if (elapsed >= value.nextNewsAt && value.remainingMs > 0) {
     headline(value);
+    privateRumor(value);
     value.nextNewsAt += 12;
     saveDemo();
     renderDemo();

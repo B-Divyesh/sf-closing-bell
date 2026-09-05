@@ -1,8 +1,10 @@
 # Demo sandbox
 
 Open `/demo` or `/?demo=1`. The active practice board appears immediately.
-It starts with 180 tickets, three fictional goods, a fixed headline deck, and
-a 90-second timer. The objective is to hold two tin robots at the bell.
+It starts with 180 tickets, three fictional goods, a fixed headline deck,
+private rumor updates, and a 90-second timer. The objective is to hold two tin
+robots at the bell. In the rehearsal, a headline and private rumor arrive
+together every 12 seconds; the real shared game uses 45-second updates.
 
 The demo never opens the shared-room WebSocket. It stores its active run and
 sound choice only in `sessionStorage` under `demo:closing-bell:run`. It does

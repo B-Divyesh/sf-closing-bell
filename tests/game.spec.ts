@@ -36,7 +36,7 @@ test('a scripted shared run reaches its scored end screen and restarts', async (
       await expect(page.locator('.timer strong')).toHaveText(code);
     }
     await pages[0].getByRole('button',{name:/Open the market/}).click();
-    const goal = await pages[0].locator('.rumor').textContent();
+    const goal = await pages[0].locator('.goal').textContent();
     const good = goal?.includes('Glowfruit') ? 'Glowfruit' : goal?.includes('weather vanes') ? 'Weather vane' : 'Tin robot';
     await pages[0].getByRole('button',{name:`Buy one ${good}`}).click();
     await pages[0].getByRole('button',{name:`Buy one ${good}`}).click();
@@ -44,6 +44,29 @@ test('a scripted shared run reaches its scored end screen and restarts', async (
     await pages[0].getByRole('button',{name:'Play another round'}).click();
     await expect(pages[0].locator('.wallet strong').first()).toHaveText('180');
     await expect(pages[0].getByText('Held: 0').first()).toBeVisible();
+  } finally { await Promise.all(contexts.map(context => context.close())); }
+});
+
+test('@claim:timed-private-rumors each shared seat receives a private market update that moves prices', async ({ browser }) => {
+  const contexts = await Promise.all([0,1,2].map(() => browser.newContext()));
+  const pages = await Promise.all(contexts.map(context => context.newPage()));
+  try {
+    await Promise.all(pages.map(page => page.goto('/')));
+    await pages[0].getByRole('button',{name:/Create a room/}).click();
+    const code = (await pages[0].locator('.timer strong').textContent())!.trim();
+    for (const page of pages.slice(1)) {
+      await page.locator('#room-code').fill(code);
+      await page.getByRole('button',{name:/Join this room/}).click();
+    }
+    await pages[0].getByRole('button',{name:/Open the market/}).click();
+    const openingPrices = await pages[0].locator('.price').allTextContents();
+    const openingRumor = await pages[0].locator('.rumor').textContent();
+
+    await expect.poll(async () => pages[0].locator('.rumor').textContent(),{timeout:5_000})
+      .not.toBe(openingRumor);
+    await expect.poll(async () => pages[0].locator('.price').allTextContents(),{timeout:5_000})
+      .not.toEqual(openingPrices);
+    expect(await pages[0].locator('.rumor').textContent()).not.toBe(await pages[1].locator('.rumor').textContent());
   } finally { await Promise.all(contexts.map(context => context.close())); }
 });
 
@@ -72,7 +95,9 @@ test('@claim:restart-resets play again starts immediately with opening tickets a
 
 test('@claim:demo-isolation demo reload is recoverable, local-only, and discarded on exit', async ({ page }) => {
   const requests:string[] = [];
+  const sockets:string[] = [];
   page.on('request',request => requests.push(request.url()));
+  page.on('websocket',socket => sockets.push(socket.url()));
   await page.addInitScript(() => localStorage.setItem('closing-bell:test-real','keep'));
   await page.goto('/demo');
   await page.getByRole('button',{name:'Buy one Glowfruit'}).click();
@@ -86,6 +111,7 @@ test('@claim:demo-isolation demo reload is recoverable, local-only, and discarde
   expect(Object.keys(storage.local).filter(key => key.startsWith('demo:'))).toEqual([]);
   expect(Object.keys(storage.session)).toEqual(['demo:closing-bell:run']);
   expect(new Set(requests.map(url => new URL(url).origin))).toEqual(new Set(['http://127.0.0.1:4173']));
+  expect(sockets.every(url => new URL(url).origin === 'ws://127.0.0.1:4173')).toBe(true);
   await page.getByRole('button',{name:'Start for real'}).click();
   expect(await page.evaluate(() => Object.keys(sessionStorage).filter(key => key.startsWith('demo:')))).toEqual([]);
   expect(await page.evaluate(() => localStorage.getItem('closing-bell:test-real'))).toBe('keep');
@@ -100,11 +126,14 @@ test('@claim:ninety-second-demo the one-click sample starts a 90-second round', 
   await expect(page.getByRole('button',{name:'Buy one Glowfruit'})).toBeVisible();
 });
 
-test('@claim:fictional-free the first screen states the account and money limits', async ({ page }) => {
+test('@claim:fictional-free a new player can trade the full sample without an account or payment step', async ({ page }) => {
+  const requests:string[] = [];
+  page.on('request',request => requests.push(request.url()));
   await page.goto('/');
-  await expect(page.getByText('No accounts',{exact:true})).toBeVisible();
-  await expect(page.getByText('No real money',{exact:true})).toBeVisible();
-  await expect(page.getByText('Free to play',{exact:true})).toBeVisible();
+  await page.getByRole('link',{name:/Try it with sample data/}).click();
+  await page.getByRole('button',{name:'Buy one Glowfruit'}).click();
+  await expect(page.getByText('Held: 1').first()).toBeVisible();
+  expect(new Set(requests.map(url => new URL(url).origin))).toEqual(new Set(['http://127.0.0.1:4173']));
 });
 
 test('@claim:settings-persist the demo sound choice survives reload in its isolated state', async ({ page }) => {
@@ -171,6 +200,12 @@ test('the static product does not register an offline update worker', async ({ p
   expect(await page.evaluate(async () => 'serviceWorker' in navigator ? (await navigator.serviceWorker.getRegistrations()).length : 0)).toBe(0);
 });
 
+test('reduced motion keeps the market preview still', async ({ page }) => {
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/');
+  await expect(page.locator('.market-preview')).toHaveCSS('transform','none');
+});
+
 test('countdown uses a CSP-safe progress element and logs no page errors', async ({ page }) => {
   const errors:string[] = [];
   page.on('console',message => { if (message.type() === 'error') errors.push(message.text()); });
@@ -184,6 +219,7 @@ test('countdown uses a CSP-safe progress element and logs no page errors', async
 });
 
 test('@claim:60-fps the fixed-step game renders at a 60 fps target under 4x CPU throttling', async ({ page, context }) => {
+  await page.setViewportSize({width:390,height:844});
   const session = await context.newCDPSession(page);
   await session.send('Emulation.setCPUThrottlingRate',{rate:4});
   await page.goto('/demo');
@@ -195,6 +231,21 @@ test('@claim:60-fps the fixed-step game renders at a 60 fps target under 4x CPU 
   }));
   expect(frames / 3).toBeGreaterThanOrEqual(50);
   expect(frames / 3).toBeLessThanOrEqual(70);
+});
+
+test('@claim:text-reflow the active game remains usable at 200% text size on a 390px screen', async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/demo');
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  await page.waitForTimeout(100);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  const timer = await page.locator('.timer').boundingBox();
+  expect(timer?.x).toBeGreaterThanOrEqual(0);
+  expect((timer?.x || 0) + (timer?.width || 0)).toBeLessThanOrEqual(390);
+  const buy = page.getByRole('button',{name:'Buy one Glowfruit'});
+  await buy.scrollIntoViewIfNeeded();
+  await buy.click();
+  await expect(page.getByText('Held: 1').first()).toBeVisible();
 });
 
 test('static deployment sends unknown paths to the designed 404 without inline styles', async () => {

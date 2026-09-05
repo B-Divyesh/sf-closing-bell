@@ -1,17 +1,19 @@
 # Closing Bell
 
 Trade fictional goods with 3–8 friends in one six-minute room-code game.
-News and player trades move shared prices until the closing bell.
+Public headlines, private rumors, and player trades move shared prices until
+the closing bell.
 
-Each player gets a private holding goal. The end screen reports a win or loss,
-final tickets, and a one-tap restart for the host.
+Each player gets a private holding goal and a new private rumor every 45
+seconds. The end screen reports a win or loss, final tickets, and a one-tap
+restart for the host.
 
 The one-click demo at `/demo` starts a 90-second practice round. It uses an
 isolated temporary state, survives reload in the same tab, and clears on exit.
 The sound setting also survives a demo reload without entering real storage.
 
-Closing Bell is free. It has no accounts, real money, prizes, betting,
-analytics, ads, or financial advice.
+Closing Bell uses fictional goods and game tickets. A new player can start the
+sample and trade without an account or payment step.
 
 ## Run
 
@@ -51,11 +53,12 @@ For a production shared-room check through the six-minute bell, run:
 npm run verify:live-shared-run
 ~~~
 
-The suite covers the browser-to-server trade protocol, shared price impact,
-reconnect, demo isolation, keyboard play, 390 px layout, route focus,
-accessibility, response policy, rate limiting, release identity, and the full
-title-to-end-screen loop. The fixed-step renderer targets 60 frames per second
-and is measured under 4× CPU throttling.
+The suite covers the browser-to-server trade protocol, timed private rumors,
+shared price impact, reconnect, demo isolation, keyboard play, 390 px layout,
+200% text reflow, route focus, accessibility, response policy, rate limiting,
+release identity, and the full title-to-end-screen loop. The fixed-step
+renderer targets 60 frames per second and is measured at 390 px under 4× CPU
+throttling.
 
 Every public claim and its exact command is listed in
 `.factory/claims.json`.
@@ -64,7 +67,8 @@ Every public claim and its exact command is listed in
 
 Build and deploy `dist/` to the `sf-closing-bell` static app. Deploy the
 included Dockerfile to the product-owned `sf-closing-bell-realtime` service
-with `/data` mounted. The production client connects only to
+with `/data` mounted, one replica, and `BUILD_SHA` set to the released Git
+commit. The production client connects only to
 `wss://closing-bell-realtime.sociobot.in`.
 
 ## Privacy and limits

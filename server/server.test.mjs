@@ -39,7 +39,7 @@ before(async () => {
 
 after(async () => {
   service?.kill();
-  await rm(dataDir,{recursive:true,force:true});
+  if (dataDir) await rm(dataDir,{recursive:true,force:true});
 });
 
 test('health exposes the running build SHA', async () => {

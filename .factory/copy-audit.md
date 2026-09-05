@@ -10,7 +10,7 @@ Audited from the rendered `/` first screen and its shared-room section on
 | For three to eight friends who want one six-minute market round. | 11 | pass |
 | Try it with sample data | 5 | pass |
 | Starts a private 90-second practice round. | 6 | pass |
-| No accounts | 2 | pass |
+| No account needed | 3 | pass |
 | No real money | 3 | pass |
 | Free to play | 3 | pass |
 | Practice market | 2 | pass |
@@ -32,12 +32,12 @@ Audited from the rendered `/` first screen and its shared-room section on
 | Create a room. | 3 | pass |
 | Share the five-letter code with two to seven friends. | 10 | pass |
 | Read the market. | 3 | pass |
-| News and player trades move each price. | 7 | pass |
+| Headlines, private rumors, and trades move each price. | 8 | pass |
 | Meet your goal. | 3 | pass |
 | Hold the right goods when the bell rings. | 8 | pass |
-| Fictional goods, real group decisions | 5 | pass |
-| This is a social game. | 5 | pass |
-| It does not use real money, prizes, betting, or financial advice. | 11 | pass |
+| Game limits | 2 | pass |
+| Trade fictional goods with game tickets. | 6 | pass |
+| There are no prizes or cash-out. | 7 | pass |
 | Closing Bell is a fictional-goods game for short group breaks. | 9 | pass |
 | Market-floor art is AI-generated and original to this game. | 9 | pass |
 
@@ -54,4 +54,5 @@ No sentence exceeds 22 words. No sentence uses a banned marketing word.
 | round ending | closing bell |
 | restored player identity | seat |
 | private success condition | goal |
+| private timed market information | private rumor |
 | isolated sample | demo |

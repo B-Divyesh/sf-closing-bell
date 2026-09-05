@@ -3,3 +3,5 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}.market-preview{transform:none}}
 .wordmark span{color:#a92a25}
 .progress::-webkit-progress-bar{background:var(--paper)}.progress::-webkit-progress-value{background:var(--red)}.progress::-moz-progress-bar{background:var(--red)}
+.private-brief{margin:.85rem 0;border:3px solid var(--ink);background:#eee4f2}.private-brief p{margin:0;padding:.65rem .8rem}.private-brief .goal{border-bottom:2px solid var(--ink);background:var(--panel)}.private-brief .rumor{border-left:5px solid var(--plum);background:#eee4f2}
+@media(max-width:500px){.board-top{display:grid;grid-template-columns:minmax(0,1fr);align-items:start}.timer{min-width:0;max-width:100%;text-align:left}.timer strong{display:block;overflow-wrap:anywhere}.demo-banner button{min-width:0}}

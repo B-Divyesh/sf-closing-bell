@@ -10,7 +10,7 @@
     "lint": "npm run typecheck",
     "preview": "vite preview --host 127.0.0.1",
     "test": "npm run test:server && playwright test",
-    "test:server": "node --test server/*.test.mjs",
+    "test:server": "node server/run-tests.mjs",
     "verify:realtime-release": "node scripts/verify-realtime-release.mjs",
     "verify:live-shared-run": "node scripts/verify-live-shared-run.mjs",
     "realtime": "node server/server.mjs"

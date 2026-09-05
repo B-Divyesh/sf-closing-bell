@@ -22,6 +22,7 @@ const upgradeBuckets = new Map();
 const messageBuckets = new Map();
 const messageLimit = Number(process.env.MESSAGE_RATE_LIMIT || 20);
 const testRoundSeconds = Number(process.env.ROUND_SECONDS || 0);
+const eventEverySeconds = Number(process.env.EVENT_INTERVAL_SECONDS || 45);
 
 function rateOk(buckets, key, limit) { const now = Date.now(); const bucket = buckets.get(key) || { n: 0, at: now }; if (now - bucket.at >= 1000) { bucket.n = 0; bucket.at = now; } bucket.n += 1; buckets.set(key, bucket); return bucket.n <= limit; }
 function save(room) { room.updatedAt = Date.now(); db.prepare('INSERT INTO rooms(code,state,updated_at) VALUES(?,?,?) ON CONFLICT(code) DO UPDATE SET state=excluded.state,updated_at=excluded.updated_at').run(room.code, JSON.stringify(room), room.updatedAt); }
@@ -67,5 +68,5 @@ wss.on('connection', ws => {
   });
   ws.on('close', () => { messageBuckets.delete(ws.rateKey); const client = clients.get(ws); clients.delete(ws); if (!client) return; const room = get(client.code); const player = room?.players.find(p => p.id === client.token); if (player) { player.connected = false; broadcast(room); } });
 });
-setInterval(() => { const rows = db.prepare("SELECT state FROM rooms WHERE updated_at > ?").all(Date.now() - 24 * 60 * 60 * 1000); rows.forEach(row => { const room = JSON.parse(row.state); if (room.phase === 'playing') { advance(room); broadcast(room); } }); }, 1000).unref();
+setInterval(() => { const rows = db.prepare("SELECT state FROM rooms WHERE updated_at > ?").all(Date.now() - 24 * 60 * 60 * 1000); rows.forEach(row => { const room = JSON.parse(row.state); if (room.phase === 'playing') { advance(room, 1, eventEverySeconds); broadcast(room); } }); }, 1000).unref();
 server.listen(port, '0.0.0.0', () => console.log(JSON.stringify({ event: 'listening', port, storage: db.filename || 'local' })));

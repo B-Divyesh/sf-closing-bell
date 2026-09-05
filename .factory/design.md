@@ -42,17 +42,22 @@ are disabled. No flashing effect is used.
 
 ## Game arc
 
-The standard shared round is six minutes. A public headline arrives every 45
-seconds; late news makes larger moves. Buying raises that good's shared price
-by two tickets, while selling lowers it by two. Each room derives a different
-deterministic sequence from its room code and creation time. A player wins by
-holding two units of their assigned good at the bell. The host can immediately
-restart the group with clean balances and a new sequence.
+The standard shared round is six minutes. Every 45 seconds, a public headline
+and a per-seat private rumor change all three shared prices; late updates make
+larger moves. A rumor belongs only to its recipient, so friends choose whether
+to share it while the resulting prices remain authoritative for everyone.
+Buying raises that good's shared price by two tickets, while selling lowers it
+by two. Each room derives a different deterministic sequence from its room
+code and creation time. A player wins by holding two units of their assigned
+good at the bell. The host can immediately restart the group with clean
+balances and a new sequence.
 
 The one-click demo starts an active 90-second rehearsal. It uses a fixed
-headline deck and a two-tin-robot objective, so the complete decision, result,
-and restart loop is easy to understand and automate. A 60 Hz fixed-step loop
-keeps its timing stable; rendering pauses when the tab is hidden.
+headline and private-rumor deck plus a two-tin-robot objective, so the complete
+decision, result, and restart loop is easy to understand and automate. A 60 Hz
+fixed-step loop keeps its timing stable; rendering pauses when the tab is
+hidden. At 390 px, the timer moves below the status line at narrow or enlarged
+text settings, preserving the full board without horizontal clipping.
 
 ## Art direction and provenance
 

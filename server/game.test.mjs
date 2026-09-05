@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { advance, join, newRoom, restart, snapshot, start, trade } from './game.mjs';
+import { advance, join, newRoom, PRIVATE_RUMORS, restart, snapshot, start, trade } from './game.mjs';
 
 function playingRoom() {
   const room = newRoom('ABCDE', 'host', 'Host', 1_700_000_000_000);
@@ -55,4 +55,27 @@ test('persisted room state recovers the same seat after a reload', () => {
   const state = snapshot(recovered, 'host').room;
   assert.equal(state.players.find(player => player.isYou)?.holdings[0], 1);
   assert.equal(state.phase, 'playing');
+});
+
+test('each 45-second market update gives every seat a private rumor and changes prices', () => {
+  const room = playingRoom();
+  room.seconds = 316;
+  const openingPrices = room.goods.map(good => good.price);
+
+  advance(room);
+
+  assert.equal(room.seconds, 315);
+  assert.equal(room.rumorBeat, 1);
+  assert.ok(room.goods.every((good, index) => good.price !== openingPrices[index]));
+
+  const hostView = snapshot(room, 'host').room;
+  const secondView = snapshot(room, 'two').room;
+  assert.equal(hostView.rumorBeat, 1);
+  assert.ok(PRIVATE_RUMORS.some(([text]) => text === hostView.rumor));
+  assert.notEqual(hostView.rumor, secondView.rumor);
+
+  const otherSeat = hostView.players.find(player => !player.isYou);
+  assert.deepEqual(Object.keys(otherSeat).sort(), ['connected', 'id', 'isYou', 'name']);
+  assert.equal('rumor' in otherSeat, false);
+  assert.equal('objective' in otherSeat, false);
 });
