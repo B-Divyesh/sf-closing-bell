@@ -3,8 +3,7 @@
 ## Release status: PASS
 
 **Implementation SHA:** `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
-**Documentation and evidence SHA:** the final handoff commit following this
-implementation commit.
+**Documentation and evidence SHA:** `ec89ab2f1e75c381403f73d373fbff989c1ca825`
 **Static deployment:** `https://closing-bell.sociobot.in`
 **Realtime deployment:** `https://closing-bell-realtime.sociobot.in`
 
