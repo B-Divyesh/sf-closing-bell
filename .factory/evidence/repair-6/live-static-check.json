@@ -1,0 +1,87 @@
+{
+  "base": "https://closing-bell.sociobot.in",
+  "checkedAt": "2026-09-05T21:38:29.145Z",
+  "firstScreens": {
+    "desktop": {
+      "job": "Trade goods together before the bell",
+      "audience": "For three to eight friends who want one six-minute market round.",
+      "firstAction": "Try it with sample data\n→",
+      "previewVisible": true,
+      "overflow": false,
+      "errors": []
+    },
+    "phone": {
+      "job": "Trade goods together before the bell",
+      "audience": "For three to eight friends who want one six-minute market round.",
+      "firstAction": "Try it with sample data\n→",
+      "previewVisible": true,
+      "overflow": false,
+      "errors": []
+    }
+  },
+  "demo": {
+    "active": {
+      "banner": "Demo — sample data, nothing is saved\nReset demo\nStart for real",
+      "heading": "Trade the practice market",
+      "tickets": "180",
+      "goods": 3,
+      "errors": []
+    },
+    "end": {
+      "heading": "You met your goal",
+      "report": "CLOSING REPORT\n\nYou met your goal\n\nYou held two tin robots when the bell rang.\n\nYou finished with 186 tickets.\n\nPlay another round\n→",
+      "errors": []
+    }
+  },
+  "notFound": {
+    "status": 404,
+    "title": "Page not found — Closing Bell",
+    "heading": "This board is not open",
+    "headerLinks": [
+      {
+        "text": "Closing Bell",
+        "href": "/"
+      },
+      {
+        "text": "Rooms",
+        "href": "/"
+      },
+      {
+        "text": "Demo",
+        "href": "/demo"
+      },
+      {
+        "text": "Privacy",
+        "href": "/privacy"
+      }
+    ],
+    "footerText": "Closing Bell is a fictional-goods game for short group breaks.\n\nPrivacy\nTerms\nBuilt by Param Factory\nBuild 1.0.0\n\nMarket-floor art is AI-generated and original to this game.",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 ()"
+    ]
+  },
+  "axe": {
+    "/": {
+      "seriousOrCritical": [],
+      "errors": []
+    },
+    "/demo": {
+      "seriousOrCritical": [],
+      "errors": []
+    },
+    "/privacy": {
+      "seriousOrCritical": [],
+      "errors": []
+    },
+    "/terms": {
+      "seriousOrCritical": [],
+      "errors": []
+    },
+    "/repair-6-missing": {
+      "seriousOrCritical": [],
+      "errors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ]
+    }
+  }
+}

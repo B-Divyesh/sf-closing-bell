@@ -1,70 +1,101 @@
-# Closing Bell review 1 handoff
+# Closing Bell repair 6 handoff
 
 ## Status
 
-Strict review verdict: **FAIL — 1 finding and 0 untested claims.**
+The strict-review finding is fixed and deployed.
 
-- Implementation candidate: `2901a2c58613946e2884f3de6b7a81bffcf2ec55`
-- Documentation checkout: `9fab156b256cc4b09060c69c4642b673cae2cd21`
-- Live static build: `715dc82f1b5141f1358c7787ff4b9e275c54210f`
+- Product implementation: `37ff32167a108b872ef9b2588b142233b72f834e`
+  (`fix: complete static 404 shell`)
 - Realtime implementation: `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
-- Live URL: <https://closing-bell.sociobot.in>
-- Report: `.factory/review-1.md`
-- Evidence: `.factory/evidence/review-1/`
+  (unchanged by this static repair)
+- Deployment target: <https://closing-bell.sociobot.in>
+- Documentation evidence base: `37ff32167a108b872ef9b2588b142233b72f834e`
 
-No product code, deployment, service configuration, or existing room was
-changed. The review created only new QA rooms. Demo checks left seeded real
-storage unchanged.
+## What changed
 
-## Finding to fix
+- Added the shared Rooms, Demo, and Privacy navigation to the static 404 page.
+- Completed the 404 footer with the product one-liner, Privacy, Terms, Param
+  Factory credit, generated-art disclosure, and `Build 1.0.0` version ID.
+- Matched the game’s touch targets, focus treatment, responsive header, and
+  neo-brutalist visual tokens on the 404 page.
+- Replaced the old source/config-string 404 regression with a browser outcome
+  test. It verifies the rendered shell at 390 px, follows Terms and Demo, and
+  checks for console errors and overflow.
 
-The live static 404 correctly returns HTTP 404 and is usable, but it does not
-use the mandatory shared site shell. Add the Rooms, Demo, and Privacy
-navigation to its header. Add the product one-liner, Privacy, Terms, Built by
-Param Factory, and build ID to its footer. Keep the page static, console clean,
-and served with a real 404 status.
+## Verification
 
-## What passed
-
-- All 11 exact claim commands pass from a fresh clone.
-- `npm run lint`, `npm test`, `npm run build`, and `npm audit` pass.
-- The full suite reports 14 server tests and 20 browser tests passing.
-- Fresh desktop and phone first screens show the job, audience, sample action,
-  and market preview before scrolling.
-- The one-click sample is populated, persistently labelled, isolated from real
-  storage, resettable, and completes win, loss, reload, and restart paths.
-- Three fresh clients completed live room `75KZE`; the host won, the other two
-  clients lost, and all received timed private rumors and closing reports.
-- Live rooms also passed invalid trading, cross-client price impact, reconnect,
-  eight-seat acceptance, and ninth-seat rejection.
-- Live health, realtime identity, upgrade/message 429 responses, cross-room
-  isolation, and SQLite process restart persistence pass.
-- Routes, legal pages, links, keyboard play, focus, reduced motion, 200% text,
-  Axe, privacy traffic, headers, and caching pass apart from the 404 shell gap.
-- Live phone-class rendering measured 60.21 FPS. Lighthouse scored
-  100/100/100/100 with LCP 902.93 ms, TBT 24 ms, and CLS 0.
-- The live static bytes exactly match a clean build of `715dc82…`; later
-  commits are report/tooling-only. The live runtime is source-equivalent to
-  candidate `2901a2c…`.
-
-## Run the verification
+From a clean dependency install (`npm ci`), the final local gates passed:
 
 ```sh
-npm ci
 npm run lint
-npm test
-npm run build
-npm audit
-EXPECTED_BUILD_SHA=bfbbfb4a69a1a279f7e247657c7303d355f38cb6 npm run verify:realtime-release
-npm run verify:live-rate-limit
-npm run verify:live-shared-run
+npm test                 # 14 server tests and 20 browser tests
+npm run build            # dist/ produced
+npm audit                # 0 vulnerabilities
 ```
 
-Run each `test` command in `.factory/claims.json` literally. The production
-shared-round command takes about six minutes.
+Every exact command in `.factory/claims.json` passed, including the eleven
+claim commands for the practice end screen/restart/isolation, 90-second demo,
+authoritative multiplayer, private rumors, six-minute/seat boundary, FPS,
+text reflow, fictional free sample, and isolated sound setting.
 
-## Next step
+The Static Web Apps emulator returned the designed page with HTTP 404 for an
+unknown route. `verify-url.sh` passed `/`, `/demo`, `/privacy`, and `/terms`
+with route titles, `lang`, one h1, main landmark, alt checks, and no page
+errors. Playwright Axe found no serious or critical violations on those routes
+or the 404. The standalone Axe CLI could not launch Selenium Chrome in this
+container; the repository’s Playwright Axe integration is the successful
+accessibility check used here.
 
-Repair only the static 404 shell, add a regression assertion for the required
-header/footer links and build label, deploy the static client, then rerun the
-route/404 checks and claim gates.
+Fresh production desktop and phone contexts showed:
+
+- Job: **Trade goods together before the bell.**
+- Audience: **Three to eight friends who want one six-minute market round.**
+- First action: **Try it with sample data.** It opens the populated 90-second
+  practice board in one click.
+- The live sample kept its **Demo — sample data, nothing is saved** banner and
+  reached **You met your goal** after two Tin robot trades.
+- `https://closing-bell.sociobot.in/repair-6-missing` returned HTTP 404 with
+  the completed header/footer, no horizontal overflow, and no accessibility
+  violations. The browser’s network-status message for the intentional 404 is
+  expected, not a page error.
+
+The live realtime identity and limits passed:
+
+```sh
+EXPECTED_BUILD_SHA=bfbbfb4a69a1a279f7e247657c7303d355f38cb6 npm run verify:realtime-release
+npm run verify:live-rate-limit
+```
+
+The rate test observed 20 accepted upgrades, then HTTP 429 with
+`Retry-After: 1`; the 21st connected message returned in-band status 429 with
+`retryAfter: 1`.
+
+The evidence-enabled production run used room `DBDHW` with three fresh client
+contexts. All seats received the first timed private rumor. The host bought two
+Glowfruit and reached **You met your goal**; the other two received
+**The goal slipped away**; all three got final ticket reports. See
+`.factory/evidence/repair-6/live-shared-run.json` and the active/end seat
+screenshots.
+
+## Earlier finding disposition
+
+All pre-review findings remain covered by the final local suite and the live
+production checks: authoritative 3–8 seat rooms, trade protocol/price impact,
+timed private rumors, reconnect persistence, result/restart handling, demo
+isolation, mobile/reflow, route metadata, caching, dependency audit, FPS,
+sound setting isolation, and realtime release identity. The sole review-1
+finding — missing shared navigation and complete footer on the deliberate 404
+— is now fixed and checked locally and live.
+
+## Evidence
+
+`.factory/evidence/repair-6/` contains fresh live first-screen desktop/phone,
+sample active/end, 404 phone, Axe summary, and three-client shared-round
+evidence. The catalog description remains verb-first and is copied to
+`/work/.evidence/catalog-description.txt`.
+
+## Known gaps
+
+None in the product. The standalone Axe CLI’s Selenium launcher is incompatible
+with the container’s Chrome binary; the Playwright Axe integration passed and
+is retained as the accessibility gate.
