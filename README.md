@@ -53,6 +53,12 @@ For a production shared-room check through the six-minute bell, run:
 npm run verify:live-shared-run
 ~~~
 
+To check the live WebSocket allowance, run:
+
+~~~sh
+npm run verify:live-rate-limit
+~~~
+
 The suite covers the browser-to-server trade protocol, timed private rumors,
 shared price impact, reconnect, demo isolation, keyboard play, 390 px layout,
 200% text reflow, route focus, accessibility, response policy, rate limiting,
