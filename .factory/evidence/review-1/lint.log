@@ -1,0 +1,8 @@
+
+> closing-bell@1.0.0 lint
+> npm run typecheck
+
+
+> closing-bell@1.0.0 typecheck
+> tsc -b --pretty false
+

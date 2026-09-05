@@ -1,0 +1,5 @@
+
+> closing-bell@1.0.0 verify:realtime-release
+> node scripts/verify-realtime-release.mjs
+
+Verified closing-bell-realtime build bfbbfb4a69a1a279f7e247657c7303d355f38cb6 at https://closing-bell-realtime.sociobot.in/health

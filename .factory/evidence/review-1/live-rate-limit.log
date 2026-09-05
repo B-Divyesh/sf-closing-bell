@@ -1,0 +1,19 @@
+
+> closing-bell@1.0.0 verify:live-rate-limit
+> node scripts/verify-live-rate-limit.mjs
+
+{
+  "realtimeUrl": "wss://closing-bell-realtime.sociobot.in",
+  "upgradeAttempts": 21,
+  "openedUpgrades": 20,
+  "upgradeLimit": {
+    "status": 429,
+    "retryAfter": "1"
+  },
+  "messageLimit": {
+    "type": "error",
+    "status": 429,
+    "message": "Too many messages. Try again in one second.",
+    "retryAfter": 1
+  }
+}

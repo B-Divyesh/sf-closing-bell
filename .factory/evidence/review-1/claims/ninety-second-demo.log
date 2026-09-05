@@ -1,0 +1,115 @@
+
+> closing-bell@1.0.0 test
+> npm run test:server && playwright test --grep @claim:ninety-second-demo
+
+
+> closing-bell@1.0.0 test:server
+> node server/run-tests.mjs
+
+TAP version 13
+# Subtest: @claim:six-minute-round shared rooms run for six minutes with three to eight seats
+ok 1 - @claim:six-minute-round shared rooms run for six minutes with three to eight seats
+  ---
+  duration_ms: 1.266205
+  type: 'test'
+  ...
+# Subtest: authoritative trades reject invalid balances and move the shared price
+ok 2 - authoritative trades reject invalid balances and move the shared price
+  ---
+  duration_ms: 0.373302
+  type: 'test'
+  ...
+# Subtest: the bell evaluates the private goal and the host can restart a clean round
+ok 3 - the bell evaluates the private goal and the host can restart a clean round
+  ---
+  duration_ms: 29.459824
+  type: 'test'
+  ...
+# Subtest: persisted room state recovers the same seat after a reload
+ok 4 - persisted room state recovers the same seat after a reload
+  ---
+  duration_ms: 1.878608
+  type: 'test'
+  ...
+# Subtest: each 45-second market update gives every seat a private rumor and changes prices
+ok 5 - each 45-second market update gives every seat a private rumor and changes prices
+  ---
+  duration_ms: 0.932104
+  type: 'test'
+  ...
+# Subtest: release identity accepts the requested realtime candidate build
+ok 6 - release identity accepts the requested realtime candidate build
+  ---
+  duration_ms: 119.837402
+  type: 'test'
+  ...
+# Subtest: regression: release identity rejects the verifier's stale realtime build
+ok 7 - regression: release identity rejects the verifier's stale realtime build
+  ---
+  duration_ms: 0.843804
+  type: 'test'
+  ...
+# Subtest: release identity requires no-store health responses
+ok 8 - release identity requires no-store health responses
+  ---
+  duration_ms: 0.415001
+  type: 'test'
+  ...
+# Subtest: health exposes the running build SHA
+ok 9 - health exposes the running build SHA
+  ---
+  duration_ms: 260.004189
+  type: 'test'
+  ...
+# Subtest: the WebSocket origin policy rejects an untrusted site with 403
+ok 10 - the WebSocket origin policy rejects an untrusted site with 403
+  ---
+  duration_ms: 7.664032
+  type: 'test'
+  ...
+# Subtest: connected-message limiting reports 429 and Retry-After before closing
+ok 11 - connected-message limiting reports 429 and Retry-After before closing
+  ---
+  duration_ms: 12.872453
+  type: 'test'
+  ...
+# Subtest: @claim:online-authority three browser seats share server-checked price impact and recover after reload
+ok 12 - @claim:online-authority three browser seats share server-checked price impact and recover after reload
+  ---
+  duration_ms: 106.054544
+  type: 'test'
+  ...
+# Subtest: room codes isolate one room from another room's seat token
+ok 13 - room codes isolate one room from another room's seat token
+  ---
+  duration_ms: 53.552024
+  type: 'test'
+  ...
+# Subtest: SQLite room state survives an authoritative process restart
+ok 14 - SQLite room state survives an authoritative process restart
+  ---
+  duration_ms: 285.997598
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3756.426538
+[WebServer] (node:1850) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:1870) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:1870) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+
+Running 1 test using 1 worker
+(node:1879) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1879) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+·
+  1 passed (3.3s)
