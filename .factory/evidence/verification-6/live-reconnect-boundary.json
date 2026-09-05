@@ -1,0 +1,23 @@
+{
+  "reconnect": {
+    "room": "7SQJW",
+    "clients": 3,
+    "invalidTrade": "You do not hold Glowfruit yet.",
+    "crossClientPriceImpact": [
+      46,
+      48
+    ],
+    "restoredHolding": 1,
+    "errors": [
+      [],
+      [],
+      []
+    ]
+  },
+  "boundary": {
+    "room": "27NBX",
+    "acceptedSeats": 8,
+    "ninthSeat": "This room already has eight players.",
+    "startTimer": "6:00"
+  }
+}

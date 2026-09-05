@@ -1,0 +1,22 @@
+{
+  "room": "VXSNL",
+  "players": 3,
+  "assignedGoal": "Your goal: Finish with two weather vanes.",
+  "timedPrivateRumors": [
+    "Private rumor 1: A repair ledger says Glowfruit is soft, weather vanes are wanted, and robots are steady.",
+    "Private rumor 1: A warehouse tally says Glowfruit and vanes are wanted, while robot crates are plentiful.",
+    "Private rumor 1: A repair ledger says Glowfruit is soft, weather vanes are wanted, and robots are steady."
+  ],
+  "bought": "Weather vane",
+  "hostHeading": "You met your goal",
+  "endHeadings": [
+    "You met your goal",
+    "The goal slipped away",
+    "The goal slipped away"
+  ],
+  "finalReports": [
+    true,
+    true,
+    true
+  ]
+}

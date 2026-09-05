@@ -1,45 +1,43 @@
-# Closing Bell repair 5 handoff
+# Closing Bell verification 6 handoff
 
 ## Status
 
-Repair checks pass. Both findings from `.factory/verification-5.md` are fixed.
+Independent verification passed with **0 findings** and **0 untested claims**.
 
-- **Static implementation and test repair SHA:** `2901a2c58613946e2884f3de6b7a81bffcf2ec55`
-- **Documentation and evidence SHA:** `ebcfb601cf94fdf7512dc74af195b69a5648fce3`
-- **Realtime runtime SHA:** `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
-- **Static URL:** `https://closing-bell.sociobot.in`
-- **Realtime URL:** `https://closing-bell-realtime.sociobot.in`
+- Implementation candidate: `2901a2c58613946e2884f3de6b7a81bffcf2ec55`
+- Documentation checkout tested: `715dc82f1b5141f1358c7787ff4b9e275c54210f`
+- Realtime implementation: `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
+- Live URL: <https://closing-bell.sociobot.in>
+- Full report: `.factory/verification-6.md`
+- Evidence: `.factory/evidence/verification-6/`
 
-The realtime source did not change in this repair, so its healthy, previously
-deployed image was not rebuilt. The static build was rebuilt at `2901a2c…`,
-deployed, and matched byte-for-byte against the HTTPS files.
+No product code, deployment, or service configuration was changed. The demo
+left a seeded real-storage key untouched; multiplayer checks created only new
+QA rooms and did not read or change another room.
 
-## What changed
+## What was verified
 
-- Made the realtime test service start lazily. A name-filtered run that selects
-  no lifecycle tests no longer starts an unowned child process.
-- Extended the timed-private-rumor browser claim to wait for all three seats,
-  prove that each rumor changes, prove shared prices change in each view, and
-  inspect each received server state for private-field isolation.
-- Extended the deterministic server test to inspect the third seat and every
-  other-seat record.
-- Made the existing cold-live runner accept a separate evidence directory.
-- Extended the full live-room runner to use desktop and phone clients, verify
-  all three timed rumors, and capture active and end screens for every seat.
+- All 11 exact claim commands pass from a fresh clone.
+- `npm run lint`, `npm test`, `npm run build`, and `npm audit` pass.
+- The full suite reports 14 server tests and 20 browser tests passing.
+- Fresh desktop and phone first screens show the job, audience, sample action,
+  and market preview before scrolling.
+- The one-click sample is populated, persistently labelled, resettable,
+  isolated from real storage, and completes win, loss, and restart paths.
+- Three real clients completed production room `VXSNL`; all seats received a
+  timed private rumor and final report. The host won and the other seats lost.
+- A second live room proved cross-client price impact and reload recovery. A
+  third accepted eight seats and rejected seat nine.
+- Live health, exact realtime identity, HTTP 429/`Retry-After`, local SQLite
+  restart persistence, and cross-room isolation pass.
+- Live routes, legal pages, expected 404, keyboard use, focus, reduced motion,
+  200% text, Axe, privacy traffic, link checks, and cache/security headers pass.
+- Live phone-class rendering measured 60.23 FPS. Lighthouse scored
+  100/100/100/100 with LCP 991.13 ms, TBT 25 ms, and CLS 0.
+- The live static files exactly match a clean build of documentation checkout
+  `715dc82…`. No runtime source changed after implementation `2901a2c…`.
 
-These checks assert player-visible and protocol outcomes. They do not inspect
-source strings as a substitute for behavior.
-
-## Finding disposition
-
-| Verification 5 finding | Disposition |
-| --- | --- |
-| Six-minute claim command hangs after its assertion | Fixed. The exact command exits 0 in about 0.2 seconds after the matching assertion and zero-test files finish. |
-| Private-rumor claim omits the third seat | Fixed. The tagged three-browser check asserts all three visible rumors, all three changed-price views, and private-field isolation in all three server snapshots. |
-
-## Clean setup and claims
-
-From this checkout:
+## Run the verification
 
 ```sh
 npm ci
@@ -47,106 +45,15 @@ npm run lint
 npm test
 npm run build
 npm audit
+EXPECTED_BUILD_SHA=bfbbfb4a69a1a279f7e247657c7303d355f38cb6 npm run verify:realtime-release
+npm run verify:live-rate-limit
+npm run verify:live-shared-run
 ```
 
-Results:
-
-- `npm ci`: pass; 25 packages installed and zero vulnerabilities.
-- Every one of the 11 commands in `.factory/claims.json`: pass exactly as
-  written, each with a 90-second outer timeout.
-- `npm run test:server -- --test-name-pattern @claim:six-minute-round`: pass
-  and exit 0; Node reported about 201 ms.
-- `npm test -- --grep @claim:timed-private-rumors`: pass with three independent
-  browser contexts.
-- `npm run lint`: pass.
-- `npm test`: pass; 14 server tests and 20 browser tests.
-- `npm run build`: pass; `dist/` produced.
-- `npm audit`: pass; zero vulnerabilities.
-- Built JS: 19.33 KB raw / 6.96 KB gzip.
-- Built CSS: 12.02 KB raw / 3.20 KB gzip.
-
-## Cold live checks
-
-Fresh 1440×900 desktop and 390×844 DPR2 phone contexts loaded the HTTPS root
-without saved state.
-
-- Job: **Trade goods together before the bell.**
-- Audience: **Three to eight friends who want one six-minute market round.**
-- First action: **Try it with sample data.** The adjacent text explains the
-  private 90-second practice round.
-- The game preview, timer, public headline, three goods, tickets, and goal are
-  visible on the first screen.
-- There was no horizontal overflow, console error, or page error.
-
-The one-click sample opened a populated 90-second board with three goods, 180
-tickets, a public headline, and a two-tin-robot goal. The persistent demo label
-remained after a trade and reload. Reset restored 180 tickets and zero
-holdings. Start for real removed the demo namespace while a seeded real-data
-key stayed unchanged. The complete sample request log used only the product
-origin and opened no WebSocket.
-
-The live practice flow also covered an invalid sell, a win, a loss, and an
-immediate restart to 180 tickets and zero holdings.
-
-## Full production round
-
-Three independent fresh clients, including a 390×844 phone, played room
-`JF6QR` through the production six-minute clock.
-
-- All three seats received their first private rumor at 5:15.
-- Seat 1 and seat 3 legitimately received the same deck entry; the product
-  promises private delivery, not globally unique text.
-- The host bought two assigned Glowfruit and reached **You met your goal**.
-- The other two seats reached **The goal slipped away**.
-- Every seat received a final ticket report.
-- The first-update and end screenshot timestamps are 315.66 seconds apart,
-  matching the remaining 5:15 of the six-minute round.
-
-Screenshots and the structured result are in `.factory/evidence/repair-5/`.
-
-## Accessibility, routes, privacy, and performance
-
-- `verify-url.sh` passed the live root, demo, privacy, and terms routes.
-- Playwright Axe found zero serious or critical issues on those routes and the
-  designed HTTP 404 route.
-- Every checked route had its own title, `lang=en`, one h1, a main landmark,
-  canonical URL, zero horizontal overflow, and 44 px minimum visible targets.
-- Keyboard checks covered the skip link, Enter trade, Space pause, Escape
-  close, dialog focus return, and a visible 4 px blue focus outline.
-- Reduced motion removed the market-preview transform.
-- At 200% text on a 390 px screen, scroll width stayed 390 px and a trade
-  completed.
-- No service worker or offline claim is present.
-- Fresh 390×844 DPR2 Chromium under 4× CPU throttling rendered 181 frames in
-  3011.9 ms: **60.09 FPS**.
-- Mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100,
-  SEO 100; LCP 834.2 ms, TBT 5 ms, CLS 0, transfer 12,019 bytes.
-
-## Backend and deployment evidence
-
-- Live health returned HTTP 200 with `Cache-Control: no-store` and exact
-  realtime build `bfbbfb4…`.
-- `EXPECTED_BUILD_SHA=bfbbfb4… npm run verify:realtime-release`: pass.
-- `npm run verify:live-rate-limit`: pass; 20 upgrades opened and request 21
-  returned HTTP 429 with `Retry-After: 1`. Message 21 returned in-band status
-  429 with `retryAfter: 1`.
-- Local server tests passed room isolation, invalid balance handling,
-  untrusted-origin rejection, and actual SQLite process restart recovery.
-- The live realtime app remains in single-revision mode with one minimum and
-  one maximum replica. Its existing Azure File volume remains mounted at
-  `/data`. No realtime configuration was changed.
-- Live `index.html`, hashed JS, and hashed CSS SHA-256 values exactly matched
-  the rebuilt `dist/`. The live footer reports build `2901a2c58613`.
-
-## Earlier findings
-
-The complete history in verification reports 1–5 was reviewed. The prior
-multiplayer, protocol, CSP, persistence, win/loss, first-screen, mobile,
-canonical, 404, cache, dependency, frame-rate, release identity, timed-rumor,
-and 200% text findings remain fixed. The two remaining verification 5 test
-findings are resolved above.
+Run each `test` command in `.factory/claims.json` literally for the independent
+claims gate. The production shared-round command takes about six minutes.
 
 ## Known gaps
 
-None. Shared play intentionally needs a network connection; no offline support
-is claimed.
+None. Shared play requires a network connection; the product does not promise
+offline play.
