@@ -9,7 +9,7 @@ The strict-review finding is fixed and deployed.
 - Realtime implementation: `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
   (unchanged by this static repair)
 - Deployment target: <https://closing-bell.sociobot.in>
-- Documentation evidence revision: `ccd30f902c9075e9bb3de302e53003521cc31c40`
+- Documentation evidence revision: `c5825b8886fb563c468b1144a6b834f9f739c104`
   (this later commit only identifies that report revision)
 
 ## What changed
