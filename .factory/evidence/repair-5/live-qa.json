@@ -1,0 +1,144 @@
+{
+  "routes": {
+    "/": {
+      "status": 200,
+      "title": "Closing Bell — Play a room-code market game",
+      "h1": 1,
+      "lang": "en",
+      "main": true,
+      "canonical": "https://closing-bell.sociobot.in/",
+      "overflow": 0,
+      "minTargetHeight": 44,
+      "seriousOrCriticalAxe": 0
+    },
+    "/demo": {
+      "status": 200,
+      "title": "Demo — Closing Bell",
+      "h1": 1,
+      "lang": "en",
+      "main": true,
+      "canonical": "https://closing-bell.sociobot.in/demo",
+      "overflow": 0,
+      "minTargetHeight": 44,
+      "seriousOrCriticalAxe": 0
+    },
+    "/privacy": {
+      "status": 200,
+      "title": "Privacy — Closing Bell",
+      "h1": 1,
+      "lang": "en",
+      "main": true,
+      "canonical": "https://closing-bell.sociobot.in/privacy",
+      "overflow": 0,
+      "minTargetHeight": 44,
+      "seriousOrCriticalAxe": 0
+    },
+    "/terms": {
+      "status": 200,
+      "title": "Terms — Closing Bell",
+      "h1": 1,
+      "lang": "en",
+      "main": true,
+      "canonical": "https://closing-bell.sociobot.in/terms",
+      "overflow": 0,
+      "minTargetHeight": 44,
+      "seriousOrCriticalAxe": 0
+    },
+    "/missing-verification-5": {
+      "status": 404,
+      "title": "Page not found — Closing Bell",
+      "h1": 1,
+      "lang": "en",
+      "main": true,
+      "canonical": "https://closing-bell.sociobot.in/404",
+      "overflow": 0,
+      "minTargetHeight": 44,
+      "seriousOrCriticalAxe": 0
+    },
+    "linkStatuses": {
+      "https://closing-bell.sociobot.in/#main": 200,
+      "https://closing-bell.sociobot.in/": 200,
+      "https://closing-bell.sociobot.in/demo": 200,
+      "https://closing-bell.sociobot.in/privacy": 200,
+      "https://closing-bell.sociobot.in/terms": 200
+    },
+    "serviceWorkers": 0
+  },
+  "firstScreens": {
+    "desktop": {
+      "headline": "Trade goods together before the bell",
+      "audience": "For three to eight friends who want one six-minute market round.",
+      "firstAction": "Try it with sample data\n→",
+      "previewVisible": true,
+      "overflow": 0,
+      "errors": []
+    },
+    "phone": {
+      "headline": "Trade goods together before the bell",
+      "audience": "For three to eight friends who want one six-minute market round.",
+      "firstAction": "Try it with sample data\n→",
+      "previewVisible": true,
+      "overflow": 0,
+      "errors": []
+    }
+  },
+  "demo": {
+    "timer": "1:30",
+    "populated": {
+      "goods": 3,
+      "tickets": "180",
+      "headline": "A lighthouse keeper orders Glowfruit lantern oil.",
+      "goal": "Your goal: Finish holding at least two tin robots."
+    },
+    "persistentLabel": true,
+    "reset": true,
+    "storageAfterExit": {
+      "real": "untouched",
+      "demoSession": [],
+      "demoLocal": []
+    },
+    "requestOrigins": [
+      "https://closing-bell.sociobot.in"
+    ],
+    "sockets": [],
+    "errors": []
+  },
+  "interaction": {
+    "endScreens": {
+      "invalidSell": "You do not hold Glowfruit yet. Buy one first.",
+      "winReport": "CLOSING REPORT\n\nYou met your goal\n\nYou held two tin robots when the bell rang.\n\nYou finished with 186 tickets.\n\nPlay another round\n→",
+      "lossReport": "CLOSING REPORT\n\nThe goal slipped away\n\nYou needed two tin robots when the bell rang.\n\nYou finished with 180 tickets.\n\nPlay another round\n→",
+      "restarted": {
+        "tickets": "180",
+        "holdings": [
+          "Held: 0",
+          "Held: 0",
+          "Held: 0"
+        ]
+      }
+    },
+    "unknownRoom": "Room code not found. Check the five characters and try again."
+  },
+  "accessibility": {
+    "textReflow": {
+      "width": 390,
+      "scrollWidth": 390,
+      "tradeCompleted": true
+    },
+    "keyboard": {
+      "focusStyle": {
+        "outlineWidth": "4px",
+        "outlineColor": "rgb(20, 100, 210)"
+      },
+      "tradeWithEnter": true,
+      "dialogFocusReturn": true,
+      "reducedTransform": "none",
+      "errors": []
+    }
+  },
+  "performance": {
+    "count": 181,
+    "elapsed": 3011.8999999999533,
+    "fps": 60.09495667186919
+  }
+}

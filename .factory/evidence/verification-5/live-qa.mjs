@@ -1,10 +1,13 @@
 import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 const base = 'https://closing-bell.sociobot.in';
-const out = new URL('.', import.meta.url).pathname;
+const out = process.env.EVIDENCE_DIR
+  ? `${process.env.EVIDENCE_DIR.replace(/\/$/, '')}/`
+  : new URL('.', import.meta.url).pathname;
+await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const results = { routes: {}, firstScreens: {}, demo: {}, interaction: {}, accessibility: {}, performance: {} };
 

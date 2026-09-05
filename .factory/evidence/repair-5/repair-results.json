@@ -1,0 +1,51 @@
+{
+  "workOrder": "closing-bell-repair-5",
+  "checkedAt": "2026-09-05T20:37:00Z",
+  "implementationSha": "2901a2c58613946e2884f3de6b7a81bffcf2ec55",
+  "realtimeSha": "bfbbfb4a69a1a279f7e247657c7303d355f38cb6",
+  "findings": {
+    "sixMinuteClaimCommand": "pass-exits-zero",
+    "privateRumorThirdSeat": "pass-three-browser-and-protocol-views"
+  },
+  "declaredClaims": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "fullSuite": {
+    "serverPassed": 14,
+    "browserPassed": 20,
+    "lint": "pass",
+    "build": "pass",
+    "audit": "pass"
+  },
+  "live": {
+    "room": "JF6QR",
+    "players": 3,
+    "allSeatsReceivedTimedRumor": true,
+    "endHeadings": [
+      "You met your goal",
+      "The goal slipped away",
+      "The goal slipped away"
+    ],
+    "allSeatsReceivedFinalReport": true,
+    "fps": 60.09495667186919,
+    "lighthouse": {
+      "performance": 100,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "lcpMs": 834.2095,
+      "tbtMs": 5,
+      "cls": 0
+    }
+  },
+  "deployment": {
+    "staticMatchesDist": true,
+    "indexSha256": "ed778b0920e713042584d4ac63d5595d9517dd76a1f2c5e5f7c37b416ed7f648",
+    "javascriptSha256": "f201b1f39e828807b4e40f5ed2874585171af3af30f754054bca43fa847da472",
+    "cssSha256": "91343bd51a7394583d75ce369d4a20b142216f1c4f0443df30e6042326456bb6",
+    "realtimeIdentity": "pass",
+    "rateLimit": "http-429-and-retry-after-pass"
+  }
+}

@@ -1,7 +1,7 @@
 # Landing copy audit
 
-Audited from the rendered `/` first screen and its shared-room section on
-2026-09-02. Hyphenated terms count as one word.
+Re-audited from the rendered `/` first screen and its shared-room section on
+2026-09-05. Hyphenated terms count as one word.
 
 | Sentence or label | Words | Result |
 | --- | ---: | --- |

@@ -1,0 +1,22 @@
+{
+  "room": "JF6QR",
+  "players": 3,
+  "assignedGoal": "Your goal: Finish with two Glowfruit.",
+  "timedPrivateRumors": [
+    "Private rumor 1: A courier note says Glowfruit is delayed, vanes are steady, and robot parts arrived early.",
+    "Private rumor 1: A dock note says Glowfruit crates are scarce, vanes are steady, and robot parts are late.",
+    "Private rumor 1: A courier note says Glowfruit is delayed, vanes are steady, and robot parts arrived early."
+  ],
+  "bought": "Glowfruit",
+  "hostHeading": "You met your goal",
+  "endHeadings": [
+    "You met your goal",
+    "The goal slipped away",
+    "The goal slipped away"
+  ],
+  "finalReports": [
+    true,
+    true,
+    true
+  ]
+}
