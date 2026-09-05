@@ -1,0 +1,22 @@
+{
+  "room": "75KZE",
+  "players": 3,
+  "assignedGoal": "Your goal: Finish with two tin robots.",
+  "timedPrivateRumors": [
+    "Private rumor 1: A school order says Glowfruit is steady, vanes are scarce, and tin robots are wanted.",
+    "Private rumor 1: A private invoice says Glowfruit is steady, vanes are wanted, and robots are delayed.",
+    "Private rumor 1: A school order says Glowfruit is steady, vanes are scarce, and tin robots are wanted."
+  ],
+  "bought": "Tin robot",
+  "hostHeading": "You met your goal",
+  "endHeadings": [
+    "You met your goal",
+    "The goal slipped away",
+    "The goal slipped away"
+  ],
+  "finalReports": [
+    true,
+    true,
+    true
+  ]
+}
