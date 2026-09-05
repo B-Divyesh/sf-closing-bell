@@ -1,0 +1,56 @@
+{
+  "fullRound": {
+    "room": "7FH3F",
+    "players": 3,
+    "startedAt": "2026-09-05T20:03:10.340Z",
+    "endedAt": "2026-09-05T20:09:10.329Z",
+    "elapsedSeconds": 359.989,
+    "startTimer": "6:00",
+    "reconnectTimer": "5:59",
+    "reconnectRestoredHolding": true,
+    "goal": "Your goal: Finish with two Glowfruit.",
+    "bought": "Glowfruit",
+    "openingPrice": 46,
+    "priceAfterTwoBuys": 50,
+    "firstRumors": [
+      "Private rumor 1: A dock note says Glowfruit crates are scarce, vanes are steady, and robot parts are late.",
+      "Private rumor 1: A courier note says Glowfruit is delayed, vanes are steady, and robot parts arrived early.",
+      "Private rumor 1: A dock note says Glowfruit crates are scarce, vanes are steady, and robot parts are late."
+    ],
+    "distinctFirstRumorCount": 2,
+    "reports": [
+      {
+        "heading": "You met your goal",
+        "text": "CLOSING REPORT\n\nYou met your goal\n\nFinish with two Glowfruit.\n\nYou finished with 208 tickets.\n\nPlay another round"
+      },
+      {
+        "heading": "The goal slipped away",
+        "text": "CLOSING REPORT\n\nThe goal slipped away\n\nFinish with two weather vanes.\n\nYou finished with 180 tickets.\n\nThe host can start the next market."
+      },
+      {
+        "heading": "The goal slipped away",
+        "text": "CLOSING REPORT\n\nThe goal slipped away\n\nFinish with two tin robots.\n\nYou finished with 180 tickets.\n\nThe host can start the next market."
+      }
+    ],
+    "restart": {
+      "timer": "6:00",
+      "tickets": "180",
+      "holdings": [
+        "Held: 0",
+        "Held: 0",
+        "Held: 0"
+      ]
+    },
+    "errors": [
+      [],
+      [],
+      []
+    ]
+  },
+  "seatBoundary": {
+    "room": "DNY9B",
+    "acceptedSeats": 8,
+    "ninthSeatError": "This room already has eight players.",
+    "startTimer": "6:00"
+  }
+}

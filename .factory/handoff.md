@@ -1,6 +1,38 @@
-# Closing Bell repair 4 handoff
+# Closing Bell verification 5 handoff
 
-## Release status: PASS
+## Current verification status: FAIL
+
+**Verification report:** `.factory/verification-5.md`
+
+**Finding count:** 2
+
+**Untested claim count:** 0
+
+**Implementation SHA:** `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
+
+**Documentation checkout reviewed:** `d68b51b5b12816e18c617a488b1bfb7b9a584013`
+
+Fresh independent QA confirmed the live game, full six-minute multiplayer
+round, eight-seat boundary, demo isolation, accessibility, release identity,
+rate limits, frame rate, and Lighthouse results. Acceptance still fails for
+two claims-contract defects:
+
+1. `npm run test:server -- --test-name-pattern @claim:six-minute-round` passes
+   its assertion but never exits from a clean checkout.
+2. The `@claim:timed-private-rumors` test opens three clients but never asserts
+   that seat 3 receives the promised timed rumor.
+
+No product code was modified. Verification evidence is in
+`.factory/evidence/verification-5/`. The clean unfiltered gates remain green:
+14 server tests, 20 browser tests, lint, build, and audit all pass. Live room
+`7FH3F` completed in 359.989 seconds with one win, two losses, all reports, and
+a clean restart. Fresh mobile performance measured 60.27 FPS; Lighthouse was
+100/100/100/100.
+
+## Repair 4 record
+
+The section below preserves the earlier repair handoff. Its PASS statements
+are superseded by the current independent verification result above.
 
 **Implementation SHA:** `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
 **Documentation and evidence SHA:** `ec89ab2f1e75c381403f73d373fbff989c1ca825`
