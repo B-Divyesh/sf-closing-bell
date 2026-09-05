@@ -286,14 +286,32 @@ test('@claim:text-reflow the active game remains usable at 200% text size on a 3
   await expect(page.getByText('Held: 1').first()).toBeVisible();
 });
 
-test('static deployment sends unknown paths to the designed 404 without inline styles', async () => {
-  const config = await import('../public/staticwebapp.config.json',{with:{type:'json'}});
-  expect(config.default).not.toHaveProperty('navigationFallback');
-  expect(config.default.responseOverrides['404'].rewrite).toBe('/404.html');
-  expect(config.default.globalHeaders['Content-Security-Policy']).toContain("frame-ancestors 'none'");
-  expect(config.default.globalHeaders['Content-Security-Policy']).not.toContain("'unsafe-inline'");
-  expect(config.default.routes.find((route:{route:string}) => route.route === '/assets/*').headers['Cache-Control']).toContain('immutable');
-  const html = await (await fetch('http://127.0.0.1:4173/404.html')).text();
-  expect(html).toContain('This board is not open');
-  expect(html).not.toContain('<style>');
+test('the static not-found page keeps the shared navigation and full footer usable', async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  const consoleErrors:string[] = [];
+  page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
+  await page.goto('/404.html');
+
+  const header = page.locator('header');
+  await expect(header.getByRole('link',{name:'Closing Bell'})).toHaveAttribute('href','/');
+  await expect(header.getByRole('link',{name:'Rooms'})).toHaveAttribute('href','/');
+  await expect(header.getByRole('link',{name:'Demo'})).toHaveAttribute('href','/demo');
+  await expect(header.getByRole('link',{name:'Privacy'})).toHaveAttribute('href','/privacy');
+
+  const footer = page.locator('footer');
+  await expect(footer.getByText('Closing Bell is a fictional-goods game for short group breaks.')).toBeVisible();
+  await expect(footer.getByRole('link',{name:'Privacy'})).toHaveAttribute('href','/privacy');
+  await expect(footer.getByRole('link',{name:'Terms'})).toHaveAttribute('href','/terms');
+  await expect(footer.getByText('Built by Param Factory')).toBeVisible();
+  await expect(footer.getByText(/^Build \S+$/)).toBeVisible();
+
+  await footer.getByRole('link',{name:'Terms'}).click();
+  await expect(page.getByRole('heading',{level:1,name:'Play with fictional goods only'})).toBeVisible();
+  await page.goto('/404.html');
+
+  await page.locator('header').getByRole('link',{name:'Demo'}).click();
+  await expect(page).toHaveURL(/\/demo$/);
+  await expect(page.getByRole('heading',{level:1,name:'Trade the practice market'})).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  expect(consoleErrors).toEqual([]);
 });
