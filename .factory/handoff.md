@@ -5,6 +5,7 @@
 Repair checks pass. Both findings from `.factory/verification-5.md` are fixed.
 
 - **Static implementation and test repair SHA:** `2901a2c58613946e2884f3de6b7a81bffcf2ec55`
+- **Documentation and evidence SHA:** `ebcfb601cf94fdf7512dc74af195b69a5648fce3`
 - **Realtime runtime SHA:** `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
 - **Static URL:** `https://closing-bell.sociobot.in`
 - **Realtime URL:** `https://closing-bell-realtime.sociobot.in`
