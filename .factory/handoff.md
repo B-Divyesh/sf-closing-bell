@@ -4,8 +4,8 @@
 
 The strict-review finding is fixed and deployed.
 
-- Product implementation: `37ff32167a108b872ef9b2588b142233b72f834e`
-  (`fix: complete static 404 shell`)
+- Product implementation: `9d1f3d75eb56afc3c3b439c815480f4d39e6dfb2`
+  (`fix: align static 404 build label`)
 - Realtime implementation: `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
   (unchanged by this static repair)
 - Deployment target: <https://closing-bell.sociobot.in>
@@ -16,12 +16,15 @@ The strict-review finding is fixed and deployed.
 
 - Added the shared Rooms, Demo, and Privacy navigation to the static 404 page.
 - Completed the 404 footer with the product one-liner, Privacy, Terms, Param
-  Factory credit, generated-art disclosure, and `Build 1.0.0` version ID.
+  Factory credit, generated-art disclosure, and the same generated build ID
+  shown on the app routes.
 - Matched the game’s touch targets, focus treatment, responsive header, and
   neo-brutalist visual tokens on the 404 page.
 - Replaced the old source/config-string 404 regression with a browser outcome
   test. It verifies the rendered shell at 390 px, follows Terms and Demo, and
-  checks for console errors and overflow.
+  checks for console errors, overflow, and the same build ID as the app footer.
+- Emit a CSP-safe `/404-build.js` during Vite builds so the static 404 uses the
+  exact deployment revision without an inline script or a fixed placeholder.
 
 ## Verification
 
@@ -59,6 +62,8 @@ Fresh production desktop and phone contexts showed:
   the completed header/footer, no horizontal overflow, and no accessibility
   violations. The browser’s network-status message for the intentional 404 is
   expected, not a page error.
+- The final cold check showed `Build 9d1f3d75eb56` on desktop, phone, and the
+  static 404. The live `/404-build.js` byte-matched the candidate build.
 
 The live realtime identity and limits passed:
 
