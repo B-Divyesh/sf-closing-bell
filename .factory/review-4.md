@@ -46,6 +46,10 @@ key while a seeded real key remained unchanged. Requests stayed on
 recorded **You met your goal** report, and **Play another round** restored 180
 tickets and zero holdings.
 
+An invalid live room code (`ZZZZZ`) returned the clear recovery message: “Room
+code not found. Check the five characters and try again.” with no browser
+errors.
+
 The independent production-room run created room `CRWQK` with three live
 clients: desktop host, desktop second seat, and a 390×844 touch seat. It ran
 through the real six-minute bell. All seats received the first timed private
