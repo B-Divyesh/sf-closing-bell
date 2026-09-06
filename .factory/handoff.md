@@ -1,21 +1,35 @@
-# Closing Bell review 3 handoff
+# Closing Bell verification 8 handoff
 
 ## Status
 
-Strict review 3 passed with zero findings and zero untested claims.
+Independent browser qualification 8 passed with zero findings and zero
+untested claims. No product code, deployment, or service configuration changed.
 
 - Product implementation: `9d1f3d75eb56afc3c3b439c815480f4d39e6dfb2`
-- Documentation checkout reviewed: `9889eec8f468fa096d2fb359107cc6a49804a5d3`
+- Documentation checkout reviewed: `df2212da73f92c775978f566c4f6f1a5b7fc7f97`
 - Realtime implementation: `bfbbfb4a69a1a279f7e247657c7303d355f38cb6`
 - Live static build label: `8a37244d0fe1`
 - Live URL: <https://closing-bell.sociobot.in>
-- Full report: `.factory/review-3.md`
+- Full report: `.factory/verification-8.md`
 
 No product code, deployment, or service configuration was changed. The review
 created only fresh anonymous test rooms and did not inspect or alter existing
 room data.
 
 ## What was verified
+
+- Chromium 145.0.7632.6, Firefox 146.0.1, and WebKit 26.0 each completed a
+  fresh desktop and 390px phone sample run through its end report. Keyboard,
+  touch, reload/reset, isolated demo storage, and user-gesture audio start
+  passed in all three engines.
+- Chromium host, Firefox client, and 390px WebKit client completed room
+  `2HQVM` through the real six-minute bell, including a 45-second update and
+  three end reports. Firefox reload restored a real shared holding in separate
+  room `GKKHA`.
+- Live URL checks and live Axe Playwright scans passed. The standalone Axe CLI
+  is unavailable only because its downloaded ChromeDriver requires Chrome 152
+  while supplied Chromium is 145; the report records the worker limitation and
+  the successful equivalent audit.
 
 - Fresh desktop and 390 px phone first screens state the job, audience, and
   sample action, with the populated game preview visible before scrolling.
@@ -53,7 +67,7 @@ Every exact public-claim command is listed in `.factory/claims.json`.
 
 ## Evidence
 
-Fresh evidence is under `/work/.evidence/closing-bell-review-3/`. The required
+Fresh evidence is under `/work/.evidence/closing-bell-verification-8/`. The required
 report copy is `/work/.evidence/qa-report.md`; the machine verdict is
 `/work/.evidence/qa-result.json`.
 

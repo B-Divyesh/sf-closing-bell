@@ -1,0 +1,9 @@
+{
+  "verdict": "PASS",
+  "finding_count": 0,
+  "untested_claim_count": 0,
+  "candidate_commit": "9d1f3d75eb56afc3c3b439c815480f4d39e6dfb2",
+  "live_url": "https://closing-bell.sociobot.in",
+  "report": ".factory/verification-8.md"
+}
+
